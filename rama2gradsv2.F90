@@ -12,8 +12,8 @@
 !          2.1          25 May       2020
 !
 !****************************************************************************
-!  ifort -O2 -o rama2gradsv2.exe rama2gradsv2.f90
-!
+!  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
+!  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
 module variables
     integer n_rama,n_ramau
     parameter (n_rama=62)! No. stations in localization file
@@ -118,6 +118,9 @@ subroutine lee_simat
 !| |  __/  __/   \__ \ | | | | | | (_| | |_
 !|_|\___|\___|___|___/_|_| |_| |_|\__,_|\__|
 !           |_____|
+#ifdef _OPENMP
+    use omp_lib
+#endif
 implicit none
 integer :: i,j,ist
 integer :: ivar
@@ -142,7 +145,7 @@ do i=1,11
     read(imet,*) cdum
     read(ipol,*) cdum
 end do
-
+!$omp parallel sections num_threads (2) private(salir)
 do while (salir)
     rval=rnulo
     read(imet,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
@@ -158,13 +161,13 @@ do while (salir)
     
     rama(ifecha,ist,ivar)=rval
     !print *,rval
-
 !    end if ! fecha
 !    if(fecha(4:5).eq.'04'.and. hora(1:2).eq.'07') salir=.false.
 !     if(ifecha.eq.hpy) salir=.false.
 end do  !salir
 200 continue
 close(imet)
+!$omp section
 print *,"   Lee archivo  ",fname2
 salir=.true.
 do while (salir)
@@ -186,6 +189,7 @@ do while (salir)
 end do  !while salir
 300 continue
 close(ipol)
+!$omp end parallel sections
  n_ramau=0
  do i=1,n_rama
    if(est_util(i)) n_ramau=n_ramau+1
