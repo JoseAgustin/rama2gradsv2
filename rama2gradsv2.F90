@@ -9,33 +9,34 @@
 !
 !  Version 1            13 September 2004
 !          2            16 June      2016
+!          2.1          25 May       2020
 !
 !****************************************************************************
 !  ifort -O2 -o rama2gradsv2.exe rama2gradsv2.f90
 !
 module variables
-integer n_rama,n_ramau
-parameter (n_rama=62)! No. stations in localization file
-parameter (rnulo=-99.)
-parameter (hpy=24*366) ! Bisiesto       1  2   3   4   5  6  7  8    9  10 11  12   13
-parameter(nvars=13) ! Rama variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
-real,dimension(n_rama) :: lon,lat,msn
-real,dimension(hpy,n_rama,nvars):: rama
-character(len=3),dimension(n_rama)    :: id_name
-logical,dimension(n_rama)    :: est_util
+    integer n_rama,n_ramau
+    parameter (n_rama=62)! No. stations in localization file
+    parameter (rnulo=-99.)
+    parameter (hpy=24*365) ! NoBisiesto       1  2   3   4   5  6  7  8    9  10 11  12   13
+    parameter(nvars=13) ! Rama variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
+    real,dimension(n_rama) :: lon,lat,msn
+    real,dimension(hpy,n_rama,nvars):: rama
+    character(len=3),dimension(n_rama)    :: id_name
+    logical,dimension(n_rama)    :: est_util
 
-common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
+    common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
 
 end module variables
 
 program  rama2gradsv2
 use variables
-! ____      _    __  __    _    ____   ____ ____      _    ____
-!|  _ \    / \  |  \/  |  / \  |___ \ / ___|  _ \    / \  |  _ \
-!| |_) |  / _ \ | |\/| | / _ \   __) | |  _| |_) |  / _ \ | | | |
-!|  _ <  / ___ \| |  | |/ ___ \ / __/| |_| |  _ <  / ___ \| |_| |
-!|_| \_\/_/   \_\_|  |_/_/   \_\_____|\____|_| \_\/_/   \_\____/
-
+!                            ____                     _           ____
+!  _ __ __ _ _ __ ___   __ _|___ \ __ _ _ __ __ _  __| |_____   _|___ \
+! | '__/ _` | '_ ` _ \ / _` | __) / _` | '__/ _` |/ _` / __\ \ / / __) |
+! | | | (_| | | | | | | (_| |/ __/ (_| | | | (_| | (_| \__ \\ V / / __/
+! |_|  \__,_|_| |_| |_|\__,_|_____\__, |_|  \__,_|\__,_|___/ \_/ |_____|
+!                                 |___/
     call lee
 
     call lee_simat
@@ -44,11 +45,12 @@ use variables
 
 contains
 subroutine output
-!  ___  _   _ _____ ____  _   _ _____
-! / _ \| | | |_   _|  _ \| | | |_   _|
-!| | | | | | | | | | |_) | | | | | |
-!| |_| | |_| | | | |  __/| |_| | | |
-! \___/ \___/  |_| |_|    \___/  |_|
+!              _               _
+!   ___  _   _| |_ _ __  _   _| |_
+!  / _ \| | | | __| '_ \| | | | __|
+! | (_) | |_| | |_| |_) | |_| | |_
+!  \___/ \__,_|\__| .__/ \__,_|\__|
+!                 |_|
 !
 implicit none
 integer :: IFLAG,NLEV,NFLAG
@@ -61,7 +63,7 @@ character(len=8) stid(n_rama)
  deg2rad =4*ATAN(1.0)/180.0
     write(6,*)'      Storing data in dat file simat_2011.dat'
     open(unit=10,file='simat_2011.dat',form='UNFORMATTED',RECORDTYPE='STREAM'&
-    &,carriagecontrol='none')
+    &,carriagecontrol='none',convert="big_endian")
     NLEV =1
     NFLAG=1
     tim = 0.0
@@ -91,14 +93,14 @@ open (unit=20,file='simat2011.ctl')
 	  write(20,'(A)')"stnmap ^simat.map "
 	  write(20,'(A6,F6.2)')"undef ",rnulo
 	  write(20,'(A)')"title Met y Cons SIMAT ppb 2011  "
-	  write(20,'(A5,I6,A27)')"tdef ",(91-31)*24," linear 7z01jan2011 1hr"
+	  write(20,'(A5,I8,A27)')"tdef ",hpy," linear 7z01jan2011 1hr"
 	  write(20,'(A5,I3)')"vars ",nvars
 	  write(20,'(A)')"t   0 99 Temperatura C  "
 	  write(20,'(A)')"u   0 99 Viento en x m/s"
 	  write(20,'(A)')"v   0 99 Viento en y m/s"
 	  write(20,'(A)')"rh  0 99 Humedad relativ"
       write(20,'(A)')"pb  0 99 Press Bar  Pa"
-      write(20,'(A)')"o3  0 99 ozono  conc ppm"
+      write(20,'(A)')"o3  0 99 ozono  conc ppb"
       write(20,'(A)')"co  0 99 CO  conc ppm   "
       write(20,'(A)')"so2 0 99 SO2  conc ppb  "
 	  write(20,'(A)')"nox 0 99 NOx  conc ppb  "
@@ -117,8 +119,9 @@ subroutine lee_simat
 !|_|\___|\___|___|___/_|_| |_| |_|\__,_|\__|
 !           |_____|
 implicit none
-integer i,j,ist
-integer ivar
+integer :: i,j,ist
+integer :: ivar
+integer :: imet,ipol
 integer ::ifecha
 logical salir
 real :: rval
@@ -133,35 +136,40 @@ fname2='contaminantes_2011.csv'
 rama=rnulo
 print *,"   Lee archivo  ",fname
 
-open (unit=12,file=fname ,status='old',action='read')
-open (unit=13,file=fname2,status='old',action='read')
+open (newunit=imet,file=fname ,status='old',action='read')
+open (newunit=ipol,file=fname2,status='old',action='read')
 do i=1,11
-    read(12,*) cdum
-    read(13,*) cdum
+    read(imet,*) cdum
+    read(ipol,*) cdum
 end do
 
 do while (salir)
     rval=rnulo
-    read(12,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
+    read(imet,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
+    !print *,fecha,hora,c_id," ",cvar,rval
 !    if (fecha(4:5).eq.'02') then
     ifecha= juliano(fecha,hora)
     ist = estacion(c_id)
     ivar = vconvert(cvar)
+    !print *,ifecha,ist,ivar
     if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*101325/760 ! conversion de mmHg a Pa
     if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
     if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
+    
     rama(ifecha,ist,ivar)=rval
+    !print *,rval
+
 !    end if ! fecha
 !    if(fecha(4:5).eq.'04'.and. hora(1:2).eq.'07') salir=.false.
 !     if(ifecha.eq.hpy) salir=.false.
 end do  !salir
 200 continue
-close(12)
+close(imet)
 print *,"   Lee archivo  ",fname2
 salir=.true.
 do while (salir)
     rval=rnulo
-    read(13,*,END=300)fecha,hora,c_id,cvar,rval  ! contaminantes
+    read(ipol,*,END=300)fecha,hora,c_id,cvar,rval  ! contaminantes
 !    if (fecha(4:5).eq.'02') then
     ifecha= juliano(fecha,hora)
     ist = estacion(c_id)
@@ -177,7 +185,7 @@ do while (salir)
 
 end do  !while salir
 300 continue
-close(13)
+close(ipol)
  n_ramau=0
  do i=1,n_rama
    if(est_util(i)) n_ramau=n_ramau+1
@@ -188,11 +196,11 @@ end subroutine lee_simat
 
 
 subroutine lee
-!  _     _____ _____
-! | |   | ____| ____|
-! | |   |  _| |  _|
-! | |___| |___| |___
-! |_____|_____|_____|
+!  _
+! | | ___  ___
+! | |/ _ \/ _ \
+! | |  __/  __/
+! |_|\___|\___|
     implicit none
     integer i,j
     character(len=13) :: fname, cdum
@@ -215,7 +223,7 @@ integer function estacion(cvar)
 !  / _ \/ __| __/ _` |/ __| |/ _ \| '_ \
 ! |  __/\__ \ || (_| | (__| | (_) | | | |
 !  \___||___/\__\__,_|\___|_|\___/|_| |_|
-character (len=3) ::cvar
+character (len=3),intent(in) ::cvar
 integer i
 do i=1,n_rama
   if(cvar.eq.id_name(i)) then
@@ -233,8 +241,7 @@ integer function vconvert(cvar)
 ! \ V / (_| (_) | | | \ V /  __/ |  | |_
 !  \_/ \___\___/|_| |_|\_/ \___|_|   \__|
 ! Identifies the variables id
-character (len=3) ::cvar
-cvar=trim(cvar)
+character (len=3),intent(in) ::cvar
     select case (cvar)
     case ("PBa")
     vconvert=5
@@ -275,8 +282,8 @@ integer function juliano(fecha,hora)
 !  | | |_| | | | (_| | | | | (_) |
 ! _/ |\__,_|_|_|\__,_|_| |_|\___/
 !|__/
-character(len=10) fecha
-character (len=5) hora
+character(len=10),intent(in):: fecha
+character (len=5),intent(in):: hora
 character (len=2) dia,mes,chora
 character (len=4) anio
 integer :: ih,idia,imes,ianio
@@ -319,6 +326,4 @@ integer :: ih,idia,imes,ianio
         !print *,imes,idia,ih, juliano,(idia-1)*24+ih
         return
 end function juliano
-
 end program
-
