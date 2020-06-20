@@ -2,11 +2,14 @@
 !
 !  Module: rama2gradsv2
 !
-!  PURPOSE:  
-!           Reads rama data and converts to Grads format
-!
-!  MADE by:  Dr. Agustin Garcia Reynoso
-!
+!  PURPOSE:
+!> @brief     Reads rama data and converts to Grads format
+!> @details Reads RAMA localization file est_rama.txt,
+!> the meteorological file meteorologia_2011.csv, the ambient concentratiosn file contaminantes_2011.csv to genrate a binary file and ctl file for GrADs
+!> @author  Dr. Agustin Garcia Reynoso
+!> @date  2020,2016,2004
+!>   @version  2.1
+!>   @copyright Universidad Nacional Autonoma de Mexico.
 !  Version 1            13 September 2004
 !          2            16 June      2016
 !          2.1          25 May       2020
@@ -14,12 +17,23 @@
 !****************************************************************************
 !  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
 !  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
+!> @param n_rama Number of stations in localization file est_rama.txt
+!> @param n_ramau Number of stations in output file
+!> @param hpy Number of hours per year
+!> @param nvars Rama variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
+!> @param rnulo Null value if missing
+!> @param lon  longitud localization for rama station
+!> @param lat  latitude localization for rama station
+!> @param msn Station Altitud
+!> @param rama Array with all data for all the time period and stations
+!> @param id_name ID of the station
+!> @param est_util true if the station contains data
 module variables
-    integer n_rama,n_ramau
-    parameter (n_rama=62)! No. stations in localization file
+    integer n_rama,n_ramau,hpy,nvars
+    parameter (n_rama=62)
     parameter (rnulo=-99.)
     parameter (hpy=24*365) ! NoBisiesto       1  2   3   4   5  6  7  8    9  10 11  12   13
-    parameter(nvars=13) ! Rama variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
+    parameter(nvars=13)
     real,dimension(n_rama) :: lon,lat,msn
     real,dimension(hpy,n_rama,nvars):: rama
     character(len=3),dimension(n_rama)    :: id_name
@@ -28,7 +42,17 @@ module variables
     common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
 
 end module variables
-
+!> @brief     Main program
+!>
+!> lee reads rama localization file
+!> lee_simat reads meteorological and pollutant concentrations files
+!> output   creats binary and description file for
+!> <a href="http://cola.gmu.edu/grads/">GrADS</a>
+!> @author  Dr. Agustin Garcia Reynoso
+!> @date  2020,2016,2004
+!>   @version  2.1
+!>   @copyright Universidad Nacional Autonoma de Mexico.
+!>
 program  rama2gradsv2
 use variables
 !                            ____                     _           ____
@@ -45,6 +69,12 @@ use variables
 
 contains
 subroutine output
+!>
+!> @brief     Creates binary file and descripting file ctl for Grads
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
+!>
 !              _               _
 !   ___  _   _| |_ _ __  _   _| |_
 !  / _ \| | | | __| '_ \| | | | __|
@@ -62,8 +92,8 @@ character(len=8) stid(n_rama)
 !
  deg2rad =4*ATAN(1.0)/180.0
     write(6,*)'      Storing data in dat file simat_2011.dat'
-    open(unit=10,file='simat_2011.dat',form='UNFORMATTED',RECORDTYPE='STREAM'&
-    &,carriagecontrol='none',convert="big_endian")
+    open(unit=10,file='simat_2011.dat',FORM='UNFORMATTED', RECORDTYPE='STREAM',&
+  & carriagecontrol='none',convert="big_endian")
     NLEV =1
     NFLAG=1
     tim = 0.0
@@ -112,6 +142,11 @@ open (unit=20,file='simat2011.ctl')
 end subroutine output
 
 subroutine lee_simat
+!> @brief     Reads meteorological y pollutant concentrations files
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
+!>
 ! _                   _                 _
 !| | ___  ___     ___(_)_ __ ___   __ _| |_
 !| |/ _ \/ _ \   / __| | '_ ` _ \ / _` | __|
@@ -158,7 +193,7 @@ do while (salir)
     if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*101325/760 ! conversion de mmHg a Pa
     if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
     if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
-    
+
     rama(ifecha,ist,ivar)=rval
     !print *,rval
 !    end if ! fecha
@@ -197,9 +232,12 @@ close(ipol)
 print *,"Numero de estaciones utiles",n_ramau
 end subroutine lee_simat
 
-
-
 subroutine lee
+!> @brief     Reads est_rama.txt file containing localization stations
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
+!>   @copyright Universidad Nacional Autonoma de Mexico.
 !  _
 ! | | ___  ___
 ! | |/ _ \/ _ \
@@ -221,6 +259,12 @@ subroutine lee
 
 end subroutine lee
 integer function estacion(cvar)
+! @param cvar istation name for identification
+!> @brief     Identify the statios in the data set
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
+!>
 ! Identifies the station number id
 !            _             _
 !   ___  ___| |_ __ _  ___(_) ___  _ __
@@ -239,6 +283,11 @@ end do
 return
 end function
 integer function vconvert(cvar)
+!> @brief     Converts the variable name into integer ID number
+!> @parm cvar name of the variable to convert
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
 !                                    _
 !__   _____ ___  _ ____   _____ _ __| |_
 !\ \ / / __/ _ \| '_ \ \ / / _ \ '__| __|
@@ -280,6 +329,13 @@ return
 end function
 
 integer function juliano(fecha,hora)
+!> @brief  Obtains the number of hours in ayear  from date and hour
+!> @param  fecha YYYY-MM-DD formate date
+!> @param  hora
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  2.1
+!>
 !   _       _ _
 !  (_)_   _| (_) __ _ _ __   ___
 !  | | | | | | |/ _` | '_ \ / _ \
