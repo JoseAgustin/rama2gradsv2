@@ -2,14 +2,6 @@
 !
 !  Module: rama2gradsv2
 !
-!  PURPOSE:
-!> @brief     Reads rama data and converts to Grads format
-!> @details Reads RAMA localization file est_rama.txt,
-!> the meteorological file meteorologia_2011.csv, the ambient concentratiosn file contaminantes_2011.csv to genrate a binary file and ctl file for GrADs
-!> @author  Dr. Agustin Garcia Reynoso
-!> @date  2020,2016,2004
-!>   @version  2.1
-!>   @copyright Universidad Nacional Autonoma de Mexico.
 !  Version 1            13 September 2004
 !          2            16 June      2016
 !          2.1          25 May       2020
@@ -17,10 +9,11 @@
 !****************************************************************************
 !  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
 !  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
+!> @brief Variables used for the conversion from ascii to bin format
 !> @param n_rama Number of stations in localization file est_rama.txt
 !> @param n_ramau Number of stations in output file
 !> @param hpy Number of hours per year
-!> @param nvars Rama variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
+!> @param nvars SIMAT/RAMA variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
 !> @param rnulo Null value if missing
 !> @param lon  longitud localization for rama station
 !> @param lat  latitude localization for rama station
@@ -28,6 +21,10 @@
 !> @param rama Array with all data for all the time period and stations
 !> @param id_name ID of the station
 !> @param est_util true if the station contains data
+!> @author  Dr. Agustin Garcia Reynoso
+!> @date  2020,2016,2004
+!>   @version  2.1
+!>   @copyright Universidad Nacional Autonoma de Mexico.
 module variables
     integer n_rama,n_ramau,hpy,nvars
     parameter (n_rama=62)
@@ -42,12 +39,8 @@ module variables
     common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
 
 end module variables
-!> @brief     Main program
-!>
-!> lee reads rama localization file
-!> lee_simat reads meteorological and pollutant concentrations files
-!> output   creats binary and description file for
-!> <a href="http://cola.gmu.edu/grads/">GrADS</a>
+!> @brief     Main program for convert ascii files  SIMAT/RAMA to binary file for <a href="http://cola.gmu.edu/grads/">GrADS</a>
+!
 !> @author  Dr. Agustin Garcia Reynoso
 !> @date  2020,2016,2004
 !>   @version  2.1
@@ -68,13 +61,12 @@ use variables
     call output
 
 contains
-subroutine output
-!>
-!> @brief     Creates binary file and descripting file ctl for Grads
-!> @author Agustin Garcia
-!> @date 28/08/2012.
-!>   @version  2.1
-!>
+!
+  !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
+  !> @author Agustin Garcia
+  !> @date 28/08/2012.
+  !>   @version  2.1
+  subroutine output
 !              _               _
 !   ___  _   _| |_ _ __  _   _| |_
 !  / _ \| | | | __| '_ \| | | | __|
@@ -140,13 +132,12 @@ open (unit=20,file='simat2011.ctl')
       write(20,'(A)')"pm25 0  99  PM2.5 ug/m3 "
       write(20,'(A)')"endvars"
 end subroutine output
-
-subroutine lee_simat
-!> @brief     Reads meteorological y pollutant concentrations files
+!> @brief     Reads meteorological (meteorologia_2011.csv) and
+!> pollutant concentration (contaminantes_2011.csv) files stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.1
-!>
+!> @version  2.1
+subroutine lee_simat
 ! _                   _                 _
 !| | ___  ___     ___(_)_ __ ___   __ _| |_
 !| |/ _ \/ _ \   / __| | '_ ` _ \ / _` | __|
@@ -232,8 +223,8 @@ close(ipol)
 print *,"Numero de estaciones utiles",n_ramau
 end subroutine lee_simat
 
-subroutine lee
 !> @brief     Reads est_rama.txt file containing localization stations
+subroutine lee
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  2.1
@@ -258,9 +249,8 @@ subroutine lee
     close(11)
 
 end subroutine lee
-integer function estacion(cvar)
-! @param cvar istation name for identification
 !> @brief     Identify the statios in the data set
+integer function estacion(cvar)
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  2.1
@@ -271,6 +261,7 @@ integer function estacion(cvar)
 !  / _ \/ __| __/ _` |/ __| |/ _ \| '_ \
 ! |  __/\__ \ || (_| | (__| | (_) | | | |
 !  \___||___/\__\__,_|\___|_|\___/|_| |_|
+!>  station name for identification
 character (len=3),intent(in) ::cvar
 integer i
 do i=1,n_rama
@@ -282,18 +273,18 @@ do i=1,n_rama
 end do
 return
 end function
-integer function vconvert(cvar)
 !> @brief     Converts the variable name into integer ID number
-!> @parm cvar name of the variable to convert
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  2.1
+integer function vconvert(cvar)
 !                                    _
 !__   _____ ___  _ ____   _____ _ __| |_
 !\ \ / / __/ _ \| '_ \ \ / / _ \ '__| __|
 ! \ V / (_| (_) | | | \ V /  __/ |  | |_
 !  \_/ \___\___/|_| |_|\_/ \___|_|   \__|
 ! Identifies the variables id
+!> name of the variable to convert
 character (len=3),intent(in) ::cvar
     select case (cvar)
     case ("PBa")
@@ -327,22 +318,20 @@ character (len=3),intent(in) ::cvar
     end select
 return
 end function
-
-integer function juliano(fecha,hora)
-!> @brief  Obtains the number of hours in ayear  from date and hour
-!> @param  fecha YYYY-MM-DD formate date
-!> @param  hora
+!> @brief  Obtains the number of hours in a year  from date and hour
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  2.1
-!>
+integer function juliano(fecha,hora)
 !   _       _ _
 !  (_)_   _| (_) __ _ _ __   ___
 !  | | | | | | |/ _` | '_ \ / _ \
 !  | | |_| | | | (_| | | | | (_) |
 ! _/ |\__,_|_|_|\__,_|_| |_|\___/
 !|__/
+!> YYYY-MM-DD formate date
 character(len=10),intent(in):: fecha
+!>   Day hour
 character (len=5),intent(in):: hora
 character (len=2) dia,mes,chora
 character (len=4) anio
