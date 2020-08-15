@@ -158,12 +158,10 @@ character(len=22) :: fname, fname2, cdum
 character(len=10)::fecha
 character(len=5) hora
 character(len=3) c_id,cvar
-salir=.true.
 fname ='meteorologia_2011.csv'
 fname2='contaminantes_2011.csv'
 
 rama=rnulo
-print *,"   Lee archivo  ",fname
 
 open (newunit=imet,file=fname ,status='old',action='read')
 open (newunit=ipol,file=fname2,status='old',action='read')
@@ -171,12 +169,12 @@ do i=1,11
     read(imet,*) cdum
     read(ipol,*) cdum
 end do
-!$omp parallel sections num_threads (2) private(salir)
-do while (salir)
+!$omp parallel sections num_threads (2) private(salir,ifecha,ist,ivar,rval,fecha,hora,c_id,cvar)
+print *,"   Lee archivo  ",fname
+salir=.true.
+do while(salir)
     rval=rnulo
     read(imet,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
-    !print *,fecha,hora,c_id," ",cvar,rval
-!    if (fecha(4:5).eq.'02') then
     ifecha= juliano(fecha,hora)
     ist = estacion(c_id)
     ivar = vconvert(cvar)
@@ -187,12 +185,10 @@ do while (salir)
 
     rama(ifecha,ist,ivar)=rval
     !print *,rval
-!    end if ! fecha
 !    if(fecha(4:5).eq.'04'.and. hora(1:2).eq.'07') salir=.false.
 !     if(ifecha.eq.hpy) salir=.false.
 end do  !salir
-200 continue
-close(imet)
+200 close(imet)
 !$omp section
 print *,"   Lee archivo  ",fname2
 salir=.true.
@@ -321,22 +317,22 @@ end function
 !> @brief  Obtains the number of hours in a year  from date and hour
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.1
-integer function juliano(fecha,hora)
+!>   @version  2.2
 !   _       _ _
 !  (_)_   _| (_) __ _ _ __   ___
 !  | | | | | | |/ _` | '_ \ / _ \
 !  | | |_| | | | (_| | | | | (_) |
 ! _/ |\__,_|_|_|\__,_|_| |_|\___/
 !|__/
-!> YYYY-MM-DD formate date
+!> @param fecha YYYY-MM-DD formate date
+!> @param hora Day hour
+integer function juliano(fecha,hora)
 character(len=10),intent(in):: fecha
-!>   Day hour
 character (len=5),intent(in):: hora
 character (len=2) dia,mes,chora
 character (len=4) anio
 integer :: ih,idia,imes,ianio
-        juliano=0
+integer,dimension(12)::month=[31,28,31,30,31,30,31,31,30,31,30,31]
         anio=fecha(7:10)
         dia =fecha(1:2)
         mes = fecha(4:5)
@@ -345,33 +341,15 @@ integer :: ih,idia,imes,ianio
         READ (dia, '(I2)'), idia
         READ (mes, '(I2)'), imes
         READ (hora, '(I2)'), ih
-        select case (imes)
-        case (1)
-         juliano=(idia-1)*24+ih
-        case (2)
-         juliano=(idia-1+31)*24+ih
-        case(3)
-        juliano=(idia-1+60)*24+ih
-        case(4)
-        juliano=(idia-1+91)*24+ih
-        case (5)
-        juliano=(idia-1+121)*24+ih
-        case (6)
-        juliano=(idia-1+152)*24+ih
-        case(7)
-        juliano=(idia-1+182)*24+ih
-        case(8)
-        juliano=(idia-1+213)*24+ih
-        case (9)
-        juliano=(idia-1+244)*24+ih
-        case (10)
-        juliano=(idia-1+274)*24+ih
-        case(11)
-        juliano=(idia-1+305)*24+ih
-        case(12)
-        juliano=(idia-1+335)*24+ih
-        case DEFAULT
-        end select
+if (imes==1) then
+  juliano=(idia-1)*24+ih
+  else
+  juliano=0
+  do i=1,imes-1
+    juliano=juliano+month(i)*24
+  end do
+  juliano=juliano+(idia-1)*24+ih
+end if
         !print *,imes,idia,ih, juliano,(idia-1)*24+ih
         return
 end function juliano
