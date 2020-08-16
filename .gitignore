@@ -1,4 +1,9 @@
 *.mod
 *.log
-
-
+*.exe
+*.o
+autom4te.cache
+config.status
+Makefile
+testsuite/Makefile
+testsuite/atconfig
