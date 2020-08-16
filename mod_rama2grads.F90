@@ -23,49 +23,59 @@
 !> @param est_util true if the station contains data
 !> @author  Dr. Agustin Garcia Reynoso
 !> @date  2020,2016,2004
-!>   @version  2.1
+!>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
-module variables
+module vp_ramatograds
     integer n_rama,n_ramau,hpy,nvars
     parameter (n_rama=62)
     parameter (rnulo=-99.)
-    parameter (hpy=24*365) ! NoBisiesto       1  2   3   4   5  6  7  8    9  10 11  12   13
+    parameter (hpy=24*366) !
     parameter(nvars=13)
     real,dimension(n_rama) :: lon,lat,msn
     real,dimension(hpy,n_rama,nvars):: rama
-    character(len=3),dimension(n_rama)    :: id_name
+    character(len=3),dimension(n_rama)    :: id_name;!> year from input data
+    character(len=4):: anio ;!> start day for output
+    character(len=2):: idia ;!> start month for output
+    character(len=2):: imes;!> end day for output
+    character(len=2):: fdia ;!> end month for output
+    character(len=2):: fmes ;!> start hour for output
+    character(len=2):: ihr ;!> end hour for output
+    character(len=2):: fhr ;!>  used sataions from est_rama.txt
     logical,dimension(n_rama)    :: est_util
 
+    NAMELIST /FECHA/ anio,ihr, idia, imes,fhr, fdia, fmes
     common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
 
-end module variables
-!> @brief     Main program for convert ascii files  SIMAT/RAMA to binary file for <a href="http://cola.gmu.edu/grads/">GrADS</a>
-!
-!> @author  Dr. Agustin Garcia Reynoso
-!> @date  2020,2016,2004
-!>   @version  2.1
-!>   @copyright Universidad Nacional Autonoma de Mexico.
-!>
-program  rama2gradsv2
-use variables
-!                            ____                     _           ____
-!  _ __ __ _ _ __ ___   __ _|___ \ __ _ _ __ __ _  __| |_____   _|___ \
-! | '__/ _` | '_ ` _ \ / _` | __) / _` | '__/ _` |/ _` / __\ \ / / __) |
-! | | | (_| | | | | | | (_| |/ __/ (_| | | | (_| | (_| \__ \\ V / / __/
-! |_|  \__,_|_| |_| |_|\__,_|_____\__, |_|  \__,_|\__,_|___/ \_/ |_____|
-!                                 |___/
-    call lee
-
-    call lee_simat
-
-    call output
-
 contains
-!
+!>  @brief read namelist input file for selecting specific days
+!>  @author Jose Agustin Garcia Reynoso
+!>  @date 08/02/2020
+!>  @version  2.0
+!>  @copyright Universidad Nacional Autonoma de Mexico
+subroutine lee_nml
+    integer ::unit_nml
+    logical :: existe
+    existe = .FALSE.
+    call logs('Start reading file - namelist.nml')
+    inquire ( FILE = 'namelist.nml' , EXIST = existe )
+        if ( existe ) then
+        !  Opening the file.
+            open ( FILE   = 'namelist.nml' ,      &
+            UNIT   =  unit_nml        ,      &
+            STATUS = 'OLD'            ,      &
+            FORM   = 'FORMATTED'      ,      &
+            ACTION = 'READ'           ,      &
+            ACCESS = 'SEQUENTIAL'     )
+            !  Reading the file
+            READ (unit_nml , NML = FECHA )
+            else
+            stop '***** No namelist.met'
+        ENDIF
+end subroutine lee_nml
   !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
   !> @author Agustin Garcia
   !> @date 28/08/2012.
-  !>   @version  2.1
+  !>   @version  3.0
   subroutine output
 !              _               _
 !   ___  _   _| |_ _ __  _   _| |_
@@ -77,13 +87,13 @@ contains
 implicit none
 integer :: IFLAG,NLEV,NFLAG
 integer :: i,j,k,icont
-real :: tim,val,deg2rad
+real,parameter :: deg2rad= 4*ATAN(1.0)/180.0
+real :: tim,val
 character(len=8) stid(n_rama)
 !
 !     Writing RAMA data bases
 !
- deg2rad =4*ATAN(1.0)/180.0
-    write(6,*)'      Storing data in dat file simat_2011.dat'
+    call logs('Storing data in dat file simat_2011.dat')
     open(unit=10,file='simat_2011.dat',FORM='UNFORMATTED', RECORDTYPE='STREAM',&
   & carriagecontrol='none',convert="big_endian")
     NLEV =1
@@ -107,7 +117,7 @@ character(len=8) stid(n_rama)
     write(10) stid(1),lat(1),lon(1),tim,0,NFLAG
 end do ! i
 close(10)
-write(6,*)'    Writing ctl file'
+call logs ('Writing ctl file')
 open (unit=20,file='simat2011.ctl')
 	  write(20,'(A)')"dset ^simat_2011.dat"
 	  write(20,'(A)')"dtype station"
@@ -136,7 +146,7 @@ end subroutine output
 !> pollutant concentration (contaminantes_2011.csv) files stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!> @version  2.1
+!> @version  3.0
 subroutine lee_simat
 ! _                   _                 _
 !| | ___  ___     ___(_)_ __ ___   __ _| |_
@@ -170,12 +180,12 @@ do i=1,11
     read(ipol,*) cdum
 end do
 !$omp parallel sections num_threads (2) private(salir,ifecha,ist,ivar,rval,fecha,hora,c_id,cvar)
-print *,"   Lee archivo  ",fname
+call logs("Lee archivo  "//fname)
 salir=.true.
 do while(salir)
     rval=rnulo
     read(imet,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
-    ifecha= juliano(fecha,hora)
+    ifecha= hourinyr(fecha,hora)
     ist = estacion(c_id)
     ivar = vconvert(cvar)
     !print *,ifecha,ist,ivar
@@ -190,13 +200,13 @@ do while(salir)
 end do  !salir
 200 close(imet)
 !$omp section
-print *,"   Lee archivo  ",fname2
+call logs("Lee archivo  "//fname2)
 salir=.true.
 do while (salir)
     rval=rnulo
     read(ipol,*,END=300)fecha,hora,c_id,cvar,rval  ! contaminantes
 !    if (fecha(4:5).eq.'02') then
-    ifecha= juliano(fecha,hora)
+    ifecha= hourinyr(fecha,hora)
     ist = estacion(c_id)
     ivar = vconvert(cvar)
     if (rval.eq.0)then
@@ -216,15 +226,15 @@ close(ipol)
  do i=1,n_rama
    if(est_util(i)) n_ramau=n_ramau+1
   end do
-print *,"Numero de estaciones utiles",n_ramau
+call logs("Numero de estaciones utiles")
+print *,n_ramau
 end subroutine lee_simat
-
-!> @brief     Reads est_rama.txt file containing localization stations
-subroutine lee
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.1
+!>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
+!> @brief     Reads est_rama.txt file containing localization stations
+subroutine lee
 !  _
 ! | | ___  ___
 ! | |/ _ \/ _ \
@@ -234,7 +244,7 @@ subroutine lee
     integer i,j
     character(len=13) :: fname, cdum
     fname='est_rama.txt'
-        print *,"   Lee archivo ",fname
+        call logs("   Lee archivo "//fname)
         open (unit=11,file=fname,status='OLD',action='read')
         read (11,'(A)')cdum
         do i=1,n_rama
@@ -249,7 +259,7 @@ end subroutine lee
 integer function estacion(cvar)
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.1
+!>   @version  3.0
 !>
 ! Identifies the station number id
 !            _             _
@@ -272,7 +282,7 @@ end function
 !> @brief     Converts the variable name into integer ID number
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.1
+!>   @version  3.0
 integer function vconvert(cvar)
 !                                    _
 !__   _____ ___  _ ____   _____ _ __| |_
@@ -318,39 +328,72 @@ end function
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  2.2
-!   _       _ _
-!  (_)_   _| (_) __ _ _ __   ___
-!  | | | | | | |/ _` | '_ \ / _ \
-!  | | |_| | | | (_| | | | | (_) |
-! _/ |\__,_|_|_|\__,_|_| |_|\___/
-!|__/
-!> @param fecha YYYY-MM-DD formate date
+!  _                      _
+! | |__   ___  _   _ _ __(_)_ __  _   _ _ __
+! | '_ \ / _ \| | | | '__| | '_ \| | | | '__|
+! | | | | (_) | |_| | |  | | | | | |_| | |
+! |_| |_|\___/ \__,_|_|  |_|_| |_|\__, |_|
+!                                 |___/
+!> @param fecha DD--MM-YYYY date format
 !> @param hora Day hour
-integer function juliano(fecha,hora)
-character(len=10),intent(in):: fecha
+integer function hourinyr(date,hora)
+implicit none
+character(len=10),intent(in):: date
 character (len=5),intent(in):: hora
-character (len=2) dia,mes,chora
-character (len=4) anio
-integer :: ih,idia,imes,ianio
+character (len=2) cdia,cmes,chora
+character (len=4) canio
+integer ::i, ih,ndia,nmes,nanio
 integer,dimension(12)::month=[31,28,31,30,31,30,31,31,30,31,30,31]
-        anio=fecha(7:10)
-        dia =fecha(1:2)
-        mes = fecha(4:5)
-        chora=hora(1:2)
-        READ (anio, '(I4)'), ianio
-        READ (dia, '(I2)'), idia
-        READ (mes, '(I2)'), imes
-        READ (hora, '(I2)'), ih
-if (imes==1) then
-  juliano=(idia-1)*24+ih
+        canio= date(7:10)
+        cdia = date(1:2)
+        cmes = date(4:5)
+        chora= hora(1:2)
+        READ (canio, '(I4)') nanio
+        READ (cdia, '(I2)')  ndia
+        READ (cmes, '(I2)')  nmes
+        READ (chora,'(I2)')  ih
+if (mod(nanio,4)==0.and.mod((nanio-1500),400)/=0) month(2)=29
+if (nmes==1) then
+  hourinyr=(ndia-1)*24+ih
   else
-  juliano=0
-  do i=1,imes-1
-    juliano=juliano+month(i)*24
+  hourinyr=0
+  do i=1,nmes-1
+    hourinyr=hourinyr+month(i)*24
   end do
-  juliano=juliano+(idia-1)*24+ih
+  hourinyr=hourinyr+(ndia-1)*24+ih
 end if
-        !print *,imes,idia,ih, juliano,(idia-1)*24+ih
+        !print *,nmes,ndia,ih, hourinyr,(ndia-1)*24+ih
         return
-end function juliano
-end program
+end function hourinyr
+!>  @brief count the number of rowns in a file
+!>   @author  Jose Agustin Garcia Reynoso
+!>   @date  07/13/2020
+!>   @version  2.2
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
+!>   @param  iunit file unit where the count has to be made
+integer function  cuenta(iunit)
+    implicit none
+    integer,intent(IN) :: iunit
+    integer :: io
+    cuenta = 0
+    DO
+        READ(iunit,*,iostat=io)
+        IF (io/=0) EXIT
+        cuenta = cuenta + 1
+    END DO
+    rewind(iunit)
+    return
+end
+!>  @brief display log during different program stages
+!>   @author  Jose Agustin Garcia Reynoso
+!>   @date  08/08/2020
+!>   @version  2.2
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
+!>   @param texto text to be displayed
+subroutine logs(texto)
+    implicit none
+    character(len=*),intent(in):: texto
+    write(6,333) texto
+333 format(3x,5("*"),x,A35,x,"******")
+end subroutine
+end module vp_ramatograds

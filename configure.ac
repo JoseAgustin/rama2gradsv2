@@ -2,10 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([rama2gradsv2], [v1.4], [agustin@atmosfera.unam.mx], ,[https://github.com/JoseAgustin/rama2gradsv2])
+AC_INIT([rama2grads], [v3.0], [agustin@atmosfera.unam.mx],[rama2grads] ,[https://github.com/JoseAgustin/rama2gradsv2])
 # Define our M4 macro directory
 AC_CONFIG_AUX_DIR([autoconf])
-AM_INIT_AUTOMAKE([1.11 foreign])
+AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
+# Initialize the test suite.
+AC_CONFIG_TESTDIR([testsuite])
+AM_MISSING_PROG([AUTOM4TE], [autom4te])
+
 # This is the default top directory of the installation
 AC_PREFIX_DEFAULT(`pwd`)
 
@@ -34,14 +38,14 @@ AC_ARG_ENABLE([parallel],
     yes) parallel=true ;;
      no) parallel=false ;;
       *) AC_MSG_ERROR([bad value ${enableval} for --enable-parallel]) ;;
-   esac], [parallel=true])
+   esac], [parallel=false])
    if test "${parallel}" = "true"; then
     FCFLAGS="${OPENMP_FCFLAGS} ${FCFLAGS}";
    else
     FCFLAGS="${FCFLAGS} ";
     fi
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile testsuite/Makefile])
 
 AC_OUTPUT
 
