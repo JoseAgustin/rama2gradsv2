@@ -494,7 +494,8 @@ test8_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_simat.F90
 # Additional files to be cleaned with 'make clean'
 CLEANFILES = *.o *.mod package.m4 testsuite
 TESTSUITE = $(srcdir)/testsuite
-EXTRA_DIST = testsuite.at $(srcdir)/package.m4 $(TESTSUITE)
+EXTRA_DIST = testsuite.at $(srcdir)/package.m4 $(TESTSUITE) \
+	est_rama.txt pol_data.csv met_data.csv namelist.nml
 AUTOTEST = $(AUTOM4TE) --language=autotest
 all: all-am
 
@@ -1031,7 +1032,6 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	echo 'm4_define([AT_PACKAGE_URL],' && \
 	echo '  [@PACKAGE_URL@])'; \
 	}>'$(srcdir)/package.m4'
-
 check-local: atconfig  $(TESTSUITE)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 

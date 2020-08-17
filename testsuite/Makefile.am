@@ -41,7 +41,7 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 TESTSUITE = $(srcdir)/testsuite
 
 EXTRA_DIST = testsuite.at $(srcdir)/package.m4 $(TESTSUITE)
-     
+EXTRA_DIST += est_rama.txt pol_data.csv met_data.csv namelist.nml     
 check-local: atconfig  $(TESTSUITE)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 
