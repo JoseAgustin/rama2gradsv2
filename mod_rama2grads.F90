@@ -5,7 +5,7 @@
 !  Version 1            13 September 2004
 !          2            16 June      2016
 !          2.1          25 May       2020
-!
+!          3.0          16 August    2020
 !****************************************************************************
 !  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
 !  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
@@ -26,25 +26,30 @@
 !>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
 module vp_ramatograds
-    integer n_rama,n_ramau,hpy,nvars
-    parameter (n_rama=62)
+    integer n_ramau,hpy,nvars
+    integer :: n_rama=65
     parameter (rnulo=-99.)
     parameter (hpy=24*366) !
-    parameter(nvars=13)
-    real,dimension(n_rama) :: lon,lat,msn
-    real,dimension(hpy,n_rama,nvars):: rama
-    character(len=3),dimension(n_rama)    :: id_name;!> year from input data
+    parameter(nvars=14)
+    real,allocatable :: lon(:)
+    real,allocatable :: lat(:)
+    real,allocatable :: msn(:)
+    real,dimension(hpy,65,nvars):: rama
+    character(len=3),allocatable,dimension(:) :: id_name
+!> year from input data
     character(len=4):: anio ;!> start day for output
     character(len=2):: idia ;!> start month for output
     character(len=2):: imes;!> end day for output
     character(len=2):: fdia ;!> end month for output
     character(len=2):: fmes ;!> start hour for output
     character(len=2):: ihr ;!> end hour for output
-    character(len=2):: fhr ;!>  used sataions from est_rama.txt
-    logical,dimension(n_rama)    :: est_util
+    character(len=2):: fhr; !> SIMAT meteorological data file
+    character(len=23):: met_file; !> SIMAT pollution data file
+    character(len=23):: pol_file;!>  used sataions from est_rama.txt
+    logical,allocatable,dimension(:) :: est_util
 
-    NAMELIST /FECHA/ anio,ihr, idia, imes,fhr, fdia, fmes
-    common /STATIONS/ est_util,lon,lat,rama,n_ramau,msn,id_name
+    NAMELIST /FECHA/ anio,ihr, idia, imes,fhr, fdia, fmes,met_file,pol_file
+    common /STATIONS/ n_ramau
 
 contains
 !>  @brief read namelist input file for selecting specific days
@@ -52,15 +57,16 @@ contains
 !>  @date 08/02/2020
 !>  @version  2.0
 !>  @copyright Universidad Nacional Autonoma de Mexico
-subroutine lee_nml
+subroutine lee_nml(fnml)
+    character(len=*),intent(IN)::fnml
     integer ::unit_nml
     logical :: existe
     existe = .FALSE.
-    call logs('Start reading file - namelist.nml')
-    inquire ( FILE = 'namelist.nml' , EXIST = existe )
+    call logs('Start reading file - '//fnml)
+    inquire ( FILE = fnml , EXIST = existe )
         if ( existe ) then
         !  Opening the file.
-            open ( FILE   = 'namelist.nml' ,      &
+            open ( FILE   = fnml ,      &
             UNIT   =  unit_nml        ,      &
             STATUS = 'OLD'            ,      &
             FORM   = 'FORMATTED'      ,      &
@@ -69,7 +75,7 @@ subroutine lee_nml
             !  Reading the file
             READ (unit_nml , NML = FECHA )
             else
-            stop '***** No namelist.met'
+            stop '***** No namelist file'
         ENDIF
 end subroutine lee_nml
   !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
@@ -90,11 +96,14 @@ integer :: i,j,k,icont
 real,parameter :: deg2rad= 4*ATAN(1.0)/180.0
 real :: tim,val
 character(len=8) stid(n_rama)
+character(len=14) :: out_file,out_filctl
 !
 !     Writing RAMA data bases
 !
-    call logs('Storing data in dat file simat_2011.dat')
-    open(unit=10,file='simat_2011.dat',FORM='UNFORMATTED', RECORDTYPE='STREAM',&
+    out_file='simat_'//anio//'.dat'
+    out_filctl='simat'//anio//'.ctl'
+    call logs('Storing data in dat file '//out_file)
+    open(unit=10,file=out_file,FORM='UNFORMATTED', RECORDTYPE='STREAM',&
   & carriagecontrol='none',convert="big_endian")
     NLEV =1
     NFLAG=1
@@ -117,15 +126,15 @@ character(len=8) stid(n_rama)
     write(10) stid(1),lat(1),lon(1),tim,0,NFLAG
 end do ! i
 close(10)
-call logs ('Writing ctl file')
-open (unit=20,file='simat2011.ctl')
-	  write(20,'(A)')"dset ^simat_2011.dat"
+    call logs ('Writing '//out_filctl)
+    open (unit=20,file=out_filctl)
+	  write(20,'(A)')"dset ^"//out_file
 	  write(20,'(A)')"dtype station"
 	  write(20,'(A)')"options big_endian"
-	  write(20,'(A)')"stnmap ^simat.map "
+	  write(20,'(A)')"stnmap ^simat"//anio//".map "
 	  write(20,'(A6,F6.2)')"undef ",rnulo
-	  write(20,'(A)')"title Met y Cons SIMAT ppb 2011  "
-	  write(20,'(A5,I8,A27)')"tdef ",hpy," linear 7z01jan2011 1hr"
+	  write(20,'(A)')"title Met y Cons SIMAT ppb "//anio
+	  write(20,'(A5,I8,A27)')"tdef ",hpy," linear 7z01JAN"//anio//" 1hr"
 	  write(20,'(A5,I3)')"vars ",nvars
 	  write(20,'(A)')"t   0 99 Temperatura C  "
 	  write(20,'(A)')"u   0 99 Viento en x m/s"
@@ -134,129 +143,101 @@ open (unit=20,file='simat2011.ctl')
       write(20,'(A)')"pb  0 99 Press Bar  Pa"
       write(20,'(A)')"o3  0 99 ozono  conc ppb"
       write(20,'(A)')"co  0 99 CO  conc ppm   "
-      write(20,'(A)')"so2 0 99 SO2  conc ppb  "
-	  write(20,'(A)')"nox 0 99 NOx  conc ppb  "
-	  write(20,'(A)')"no  0 99 NO    conc ppb "
-      write(20,'(A)')"no2 0 99 NO2   conc ppb "
-	  write(20,'(A)')"pm10 0  99  PM10  ug/m3 "
-      write(20,'(A)')"pm25 0  99  PM2.5 ug/m3 "
+      write(20,'(A)')"so2 0 99 SO2 conc ppb  "
+	  write(20,'(A)')"nox 0 99 NOx conc ppb  "
+	  write(20,'(A)')"no  0 99 NO  conc ppb "
+      write(20,'(A)')"no2 0 99 NO2 conc ppb "
+	  write(20,'(A)')"pm10 0 99  PM10  ug/m3 "
+      write(20,'(A)')"pm25 0 99  PM2.5 ug/m3 "
+      write(20,'(A)')"pmco 0 99  PMCO ug/m3 "
       write(20,'(A)')"endvars"
 end subroutine output
-!> @brief     Reads meteorological (meteorologia_2011.csv) and
-!> pollutant concentration (contaminantes_2011.csv) files stores values in matrix rama
+!> @brief Reads SIMAT database filesand stores values in matrix rama
 !> @author Agustin Garcia
-!> @date 28/08/2012.
+!> @date 16/08/2020.
 !> @version  3.0
-subroutine lee_simat
-! _                   _                 _
-!| | ___  ___     ___(_)_ __ ___   __ _| |_
-!| |/ _ \/ _ \   / __| | '_ ` _ \ / _` | __|
-!| |  __/  __/   \__ \ | | | | | | (_| | |_
-!|_|\___|\___|___|___/_|_| |_| |_|\__,_|\__|
-!           |_____|
-#ifdef _OPENMP
-    use omp_lib
-#endif
+!> @param file_read file to read
+subroutine lee_simat_data(file_read)
 implicit none
-integer :: i,j,ist
+integer :: i,ifile
+integer :: ist
 integer :: ivar
-integer :: imet,ipol
-integer ::ifecha
+integer :: imet
+integer :: ifecha
 logical salir
+!> conversion de mmHg a Pa
+real,parameter :: mmHg2Pa =101325./760.
 real :: rval
-character(len=22) :: fname, fname2, cdum
-character(len=10)::fecha
-character(len=5) hora
-character(len=3) c_id,cvar
-fname ='meteorologia_2011.csv'
-fname2='contaminantes_2011.csv'
+character(len=*),intent(in):: file_read
+character(len=32) :: cdum
+character(len=10) ::fecha
+character(len=5)  :: hora
+character(len=3)  :: c_id,cvar
 
-rama=rnulo
+open (newunit=ifile,file=file_read,status='old',action='read')
+!reading headings
+    do i=1,11
+        read(ifile,*) cdum
+    end do
+    call logs("Lee archivo "//file_read)
+    salir=.true.
+    do while(salir)
+        rval=rnulo
+        read(ifile,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
+        ifecha= hourinyr(fecha,hora)
+        ist = estacion(c_id)
+        ivar = vconvert(cvar)
+        
+        if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*mmHg2Pa
+        if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
+        if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
+        !print *,ifecha,ist,ivar,rval
+        rama(ifecha,ist,ivar)=rval
+    !     if(ifecha.eq.hpy) salir=.false.
+    end do  !salir
 
-open (newunit=imet,file=fname ,status='old',action='read')
-open (newunit=ipol,file=fname2,status='old',action='read')
-do i=1,11
-    read(imet,*) cdum
-    read(ipol,*) cdum
-end do
-!$omp parallel sections num_threads (2) private(salir,ifecha,ist,ivar,rval,fecha,hora,c_id,cvar)
-call logs("Lee archivo  "//fname)
-salir=.true.
-do while(salir)
-    rval=rnulo
-    read(imet,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
-    ifecha= hourinyr(fecha,hora)
-    ist = estacion(c_id)
-    ivar = vconvert(cvar)
-    !print *,ifecha,ist,ivar
-    if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*101325/760 ! conversion de mmHg a Pa
-    if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
-    if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
-
-    rama(ifecha,ist,ivar)=rval
-    !print *,rval
-!    if(fecha(4:5).eq.'04'.and. hora(1:2).eq.'07') salir=.false.
-!     if(ifecha.eq.hpy) salir=.false.
-end do  !salir
-200 close(imet)
-!$omp section
-call logs("Lee archivo  "//fname2)
-salir=.true.
-do while (salir)
-    rval=rnulo
-    read(ipol,*,END=300)fecha,hora,c_id,cvar,rval  ! contaminantes
-!    if (fecha(4:5).eq.'02') then
-    ifecha= hourinyr(fecha,hora)
-    ist = estacion(c_id)
-    ivar = vconvert(cvar)
-    if (rval.eq.0)then
-     rval=rnulo
-     else
-      rama(ifecha,ist,ivar)=rval
-     end if
-!    end if ! fecha
-!    if(fecha(4:5).eq.'04'.and. hora(1:2).eq.'07') salir=.false.
-!     if(ifecha.eq.hpy) salir=.false.
-
-end do  !while salir
-300 continue
-close(ipol)
-!$omp end parallel sections
- n_ramau=0
+200 close(ifile)
+n_ramau=0
  do i=1,n_rama
    if(est_util(i)) n_ramau=n_ramau+1
   end do
-call logs("Numero de estaciones utiles")
-print *,n_ramau
-end subroutine lee_simat
+  write(cdum,'(A27,x,I2)')"Numero de estaciones utiles",n_ramau
+call logs(cdum)
+end subroutine lee_simat_data
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
 !> @brief     Reads est_rama.txt file containing localization stations
-subroutine lee
-!  _
-! | | ___  ___
-! | |/ _ \/ _ \
-! | |  __/  __/
-! |_|\___|\___|
+!  _                        _             _
+! | | ___  ___     ___  ___| |_ __ _  ___(_) ___  _ __   ___  ___
+! | |/ _ \/ _ \   / _ \/ __| __/ _` |/ __| |/ _ \| '_ \ / _ \/ __|
+! | |  __/  __/  |  __/\__ \ || (_| | (__| | (_) | | | |  __/\__ \
+! |_|\___|\___|___\___||___/\__\__,_|\___|_|\___/|_| |_|\___||___/
+!           |_____|
+!  _ __ __ _ _ __ ___   __ _
+! | '__/ _` | '_ ` _ \ / _` |
+! | | | (_| | | | | | | (_| |
+! |_|  \__,_|_| |_| |_|\__,_|
+    subroutine lee_estaciones_rama
     implicit none
-    integer i,j
+    integer :: i,j,iunit
     character(len=13) :: fname, cdum
     fname='est_rama.txt'
-        call logs("   Lee archivo "//fname)
-        open (unit=11,file=fname,status='OLD',action='read')
-        read (11,'(A)')cdum
+        call logs(" Lee archivo "//fname//"  ")
+        open (newunit=iunit,file=fname,status='OLD',action='read')
+        n_rama=cuenta(iunit)-1
+        allocate(lat(n_rama),lon(n_rama),id_name(n_rama))
+        allocate(msn(n_rama),est_util(n_rama))
+        read (iunit,'(A)')cdum
         do i=1,n_rama
-            read (11,*) id_name(i),lat(i),lon(i),msn(i)
+            read (iunit,*) id_name(i),lat(i),lon(i),msn(i)
             !print *,id_name(i),lat(i),lon(i),msn(i)
         end do
     est_util=.false.
-    close(11)
-
-end subroutine lee
+    close(iunit)
+end subroutine lee_estaciones_rama
 !> @brief     Identify the statios in the data set
-integer function estacion(cvar)
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  3.0
@@ -268,6 +249,7 @@ integer function estacion(cvar)
 ! |  __/\__ \ || (_| | (__| | (_) | | | |
 !  \___||___/\__\__,_|\___|_|\___/|_| |_|
 !>  station name for identification
+integer function estacion(cvar)
 character (len=3),intent(in) ::cvar
 integer i
 do i=1,n_rama
@@ -279,10 +261,11 @@ do i=1,n_rama
 end do
 return
 end function
-!> @brief     Converts the variable name into integer ID number
+!> @brief Set ID number to the variable name
 !> @author Agustin Garcia
 !> @date 28/08/2012.
 !>   @version  3.0
+!> @param cvar name of the variable to convert
 integer function vconvert(cvar)
 !                                    _
 !__   _____ ___  _ ____   _____ _ __| |_
@@ -290,39 +273,18 @@ integer function vconvert(cvar)
 ! \ V / (_| (_) | | | \ V /  __/ |  | |_
 !  \_/ \___\___/|_| |_|\_/ \___|_|   \__|
 ! Identifies the variables id
-!> name of the variable to convert
-character (len=3),intent(in) ::cvar
-    select case (cvar)
-    case ("PBa")
-    vconvert=5
-    case ("TMP")
-    vconvert=1
-    case ("WSP")
-    vconvert=2
-    case ("WDR")
-    vconvert=3
-    case ("RH")
-    vconvert=4
-    case ("O3")
-    vconvert=6
-    case ("CO")
-    vconvert=7
-    case("SO2")
-    vconvert=8
-    case("NOX")
-    vconvert=9
-    case("NO")
-    vconvert=10
-    case("NO2")
-    vconvert=11
-    case("PM1")
-    vconvert=12
-    case("PM2")
-    vconvert=13
-    case DEFAULT
+    character (len=3),intent(in) ::cvar
+    character(len=3),dimension(nvars):: parametro
+    parametro=["TMP","WSP","WDR","RH","PBa","O3","CO",&
+               "SO2","NOX","NO","NO2","PM1","PM2","PMC"]
+    do i=1,size(parametro)
+        if(trim(cvar).eq.parametro(i)) then
+            vconvert=i
+            return
+        end if
+    end do
     vconvert=-99
-    end select
-return
+    return
 end function
 !> @brief  Obtains the number of hours in a year  from date and hour
 !> @author Agustin Garcia
@@ -334,7 +296,7 @@ end function
 ! | | | | (_) | |_| | |  | | | | | |_| | |
 ! |_| |_|\___/ \__,_|_|  |_|_| |_|\__, |_|
 !                                 |___/
-!> @param fecha DD--MM-YYYY date format
+!> @param date DD--MM-YYYY date format
 !> @param hora Day hour
 integer function hourinyr(date,hora)
 implicit none
@@ -365,6 +327,11 @@ end if
         !print *,nmes,ndia,ih, hourinyr,(ndia-1)*24+ih
         return
 end function hourinyr
+!                       _
+!   ___ _   _  ___ _ __ | |_ __ _
+!  / __| | | |/ _ \ '_ \| __/ _` |
+! | (__| |_| |  __/ | | | || (_| |
+!  \___|\__,_|\___|_| |_|\__\__,_|
 !>  @brief count the number of rowns in a file
 !>   @author  Jose Agustin Garcia Reynoso
 !>   @date  07/13/2020
@@ -384,6 +351,12 @@ integer function  cuenta(iunit)
     rewind(iunit)
     return
 end
+!  _
+! | | ___   __ _ ___
+! | |/ _ \ / _` / __|
+! | | (_) | (_| \__ \
+! |_|\___/ \__, |___/
+!          |___/
 !>  @brief display log during different program stages
 !>   @author  Jose Agustin Garcia Reynoso
 !>   @date  08/08/2020

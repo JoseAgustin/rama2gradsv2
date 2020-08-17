@@ -6,6 +6,6 @@ AT_SETUP([Functions log vconv hourinyr cuenta])
 AT_TESTED([test1 test2 test3 test4])
 AT_CLEANUP
 
-AT_SETUP([Subroutine lee_namelist])
-AT_TESTED([ test5 ])
+AT_SETUP([Subroutine lee_namelist est leest simat])
+AT_TESTED([ test5 test6 test7 test8])
 AT_CLEANUP

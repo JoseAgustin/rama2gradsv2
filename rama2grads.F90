@@ -13,10 +13,11 @@
 !                                 |___/
 program  rama2grads
 use vp_ramatograds
-    call lee
-
-    call lee_simat
-
+    call logs("Starting Process        ")
+    call lee_nml("namelist.nml")
+    call lee_estaciones_rama
+    call lee_simat_data(met_file)
+    call lee_simat_data(pol_file)
     call output
-
+    call logs("End Process       ")
 end program

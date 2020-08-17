@@ -86,9 +86,10 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 TESTS = test1$(EXEEXT) test2$(EXEEXT) test3$(EXEEXT) test4$(EXEEXT) \
-	test5$(EXEEXT)
+	test5$(EXEEXT) test6$(EXEEXT) test7$(EXEEXT) test8$(EXEEXT)
 check_PROGRAMS = test1$(EXEEXT) test2$(EXEEXT) test3$(EXEEXT) \
-	test4$(EXEEXT) test5$(EXEEXT)
+	test4$(EXEEXT) test5$(EXEEXT) test6$(EXEEXT) test7$(EXEEXT) \
+	test8$(EXEEXT)
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -119,6 +120,18 @@ am_test5_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
 	t_lee_nml.$(OBJEXT)
 test5_OBJECTS = $(am_test5_OBJECTS)
 test5_LDADD = $(LDADD)
+am_test6_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
+	t_esta.$(OBJEXT)
+test6_OBJECTS = $(am_test6_OBJECTS)
+test6_LDADD = $(LDADD)
+am_test7_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
+	t_lee_est.$(OBJEXT)
+test7_OBJECTS = $(am_test7_OBJECTS)
+test7_LDADD = $(LDADD)
+am_test8_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
+	t_simat.$(OBJEXT)
+test8_OBJECTS = $(am_test8_OBJECTS)
+test8_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -146,9 +159,11 @@ am__v_FCLD_ = $(am__v_FCLD_@AM_DEFAULT_V@)
 am__v_FCLD_0 = @echo "  FCLD    " $@;
 am__v_FCLD_1 = 
 SOURCES = $(test1_SOURCES) $(test2_SOURCES) $(test3_SOURCES) \
-	$(test4_SOURCES) $(test5_SOURCES)
+	$(test4_SOURCES) $(test5_SOURCES) $(test6_SOURCES) \
+	$(test7_SOURCES) $(test8_SOURCES)
 DIST_SOURCES = $(test1_SOURCES) $(test2_SOURCES) $(test3_SOURCES) \
-	$(test4_SOURCES) $(test5_SOURCES)
+	$(test4_SOURCES) $(test5_SOURCES) $(test6_SOURCES) \
+	$(test7_SOURCES) $(test8_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -472,6 +487,9 @@ test2_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_vconv.F90
 test3_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_hyr.F90
 test4_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_cuenta.F90
 test5_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_lee_nml.F90
+test6_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_esta.F90
+test7_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_lee_est.F90
+test8_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_simat.F90
 
 # Additional files to be cleaned with 'make clean'
 CLEANFILES = *.o *.mod package.m4 testsuite
@@ -543,6 +561,18 @@ test4$(EXEEXT): $(test4_OBJECTS) $(test4_DEPENDENCIES) $(EXTRA_test4_DEPENDENCIE
 test5$(EXEEXT): $(test5_OBJECTS) $(test5_DEPENDENCIES) $(EXTRA_test5_DEPENDENCIES) 
 	@rm -f test5$(EXEEXT)
 	$(AM_V_FCLD)$(FCLINK) $(test5_OBJECTS) $(test5_LDADD) $(LIBS)
+
+test6$(EXEEXT): $(test6_OBJECTS) $(test6_DEPENDENCIES) $(EXTRA_test6_DEPENDENCIES) 
+	@rm -f test6$(EXEEXT)
+	$(AM_V_FCLD)$(FCLINK) $(test6_OBJECTS) $(test6_LDADD) $(LIBS)
+
+test7$(EXEEXT): $(test7_OBJECTS) $(test7_DEPENDENCIES) $(EXTRA_test7_DEPENDENCIES) 
+	@rm -f test7$(EXEEXT)
+	$(AM_V_FCLD)$(FCLINK) $(test7_OBJECTS) $(test7_LDADD) $(LIBS)
+
+test8$(EXEEXT): $(test8_OBJECTS) $(test8_DEPENDENCIES) $(EXTRA_test8_DEPENDENCIES) 
+	@rm -f test8$(EXEEXT)
+	$(AM_V_FCLD)$(FCLINK) $(test8_OBJECTS) $(test8_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -781,6 +811,27 @@ test4.log: test4$(EXEEXT)
 test5.log: test5$(EXEEXT)
 	@p='test5$(EXEEXT)'; \
 	b='test5'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test6.log: test6$(EXEEXT)
+	@p='test6$(EXEEXT)'; \
+	b='test6'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test7.log: test7$(EXEEXT)
+	@p='test7$(EXEEXT)'; \
+	b='test7'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test8.log: test8$(EXEEXT)
+	@p='test8$(EXEEXT)'; \
+	b='test8'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

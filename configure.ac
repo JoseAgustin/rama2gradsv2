@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([rama2grads], [v3.0], [agustin@atmosfera.unam.mx],[rama2grads] ,[https://github.com/JoseAgustin/rama2gradsv2])
 # Define our M4 macro directory
 AC_CONFIG_AUX_DIR([autoconf])
-AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.16 foreign subdir-objects])
 # Initialize the test suite.
 AC_CONFIG_TESTDIR([testsuite])
 AM_MISSING_PROG([AUTOM4TE], [autom4te])
@@ -45,7 +45,8 @@ AC_ARG_ENABLE([parallel],
     FCFLAGS="${FCFLAGS} ";
     fi
 
-AC_CONFIG_FILES([Makefile testsuite/Makefile])
+AC_CONFIG_FILES([Makefile 
+                 testsuite/Makefile])
 
 AC_OUTPUT
 
