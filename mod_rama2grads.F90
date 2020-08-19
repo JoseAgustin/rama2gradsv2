@@ -9,46 +9,39 @@
 !****************************************************************************
 !  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
 !  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
-!> @brief Variables used for the conversion from ascii to bin format
-!> @param n_rama Number of stations in localization file est_rama.txt
-!> @param n_ramau Number of stations in output file
-!> @param hpy Number of hours per year
-!> @param nvars SIMAT/RAMA variables (TMP,WSP,WMD,RH,PBa,O3,SO2,NOx,NO2,NO,CO,PM10,PM2.5)
-!> @param rnulo Null value if missing
-!> @param lon  longitud localization for rama station
-!> @param lat  latitude localization for rama station
-!> @param msn Station Altitud
-!> @param rama Array with all data for all the time period and stations
-!> @param id_name ID of the station
-!> @param est_util true if the station contains data
-!> @author  Dr. Agustin Garcia Reynoso
-!> @date  2020,2016,2004
+!>  @brief Variables used for the conversion from ascii to GrADS station data file
+!>  @author  Dr. Agustin Garcia Reynoso
+!>  @date  2020,2016,2004
 !>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
 module vp_ramatograds
-    integer n_ramau,hpy,nvars
-    integer :: n_rama=65
-    parameter (rnulo=-99.)
-    parameter (hpy=24*366) !
-    parameter(nvars=14)
-    real,allocatable :: lon(:)
-    real,allocatable :: lat(:)
-    real,allocatable :: msn(:)
-    real,dimension(hpy,65,nvars):: rama
+    !> number used for represent null value
+    real,parameter :: rnulo=-99.
+!>SIMAT/RAMA variables (TMP,WSP,WMD,RH,PBa, O3,SO2,NOx,NO2,NO,CO,PM10,PM25,PMCO)
+    integer,parameter::nvars=14 ;!> Number of stations in output file
+    integer:: n_ramau
+    !> n_rama Number of stations in localization file est_rama.txt
+    integer :: n_rama=65 ;!> Total hour in year
+    integer :: hrs_yr ;!> Initial hour in year for the storing data
+    integer :: hr_ini ;!> End hour in year for the storing data
+    integer :: hr_end
+    !>longitud localization of SIMAT station
+    real,allocatable :: lon(:) ; !> latitude localization of SIMAT station
+    real,allocatable :: lat(:) ;!>  Altitude of station
+    real,allocatable :: msn(:) ;!>Array with all data for all the time period and stations
+    real,allocatable :: rama(:,:,:) ;!> Station identification name
     character(len=3),allocatable,dimension(:) :: id_name
-!> year from input data
+    !> year from input data
     character(len=4):: anio ;!> start day for output
     character(len=2):: idia ;!> start month for output
     character(len=2):: imes;!> end day for output
     character(len=2):: fdia ;!> end month for output
-    character(len=2):: fmes ;!> start hour for output
-    character(len=2):: ihr ;!> end hour for output
-    character(len=2):: fhr; !> SIMAT meteorological data file
+    character(len=2):: fmes ;!> SIMAT meteorological data file
     character(len=23):: met_file; !> SIMAT pollution data file
-    character(len=23):: pol_file;!>  used sataions from est_rama.txt
+    character(len=23):: pol_file;!>  used stations from est_rama.txt
     logical,allocatable,dimension(:) :: est_util
 
-    NAMELIST /FECHA/ anio,ihr, idia, imes,fhr, fdia, fmes,met_file,pol_file
+    NAMELIST /FECHA/ anio, idia, imes, fdia, fmes,met_file,pol_file
     common /STATIONS/ n_ramau
 
 contains
@@ -57,9 +50,10 @@ contains
 !>  @date 08/02/2020
 !>  @version  2.0
 !>  @copyright Universidad Nacional Autonoma de Mexico
+!>  @param fnml namelist file name
 subroutine lee_nml(fnml)
     character(len=*),intent(IN)::fnml
-    integer ::unit_nml
+    integer ::unit_nml=10
     logical :: existe
     existe = .FALSE.
     call logs('Start reading file - '//fnml)
@@ -74,9 +68,13 @@ subroutine lee_nml(fnml)
             ACCESS = 'SEQUENTIAL'     )
             !  Reading the file
             READ (unit_nml , NML = FECHA )
+            close(unit_nml)
             else
             stop '***** No namelist file'
         ENDIF
+    hrs_yr=hourinyr("31-12-"//anio,"23:00")
+    hr_ini=hourinyr(idia//"-"//imes//"-"//anio,"01:00")
+    hr_end=hourinyr(fdia//"-"//fmes//"-"//anio,"24:00")
 end subroutine lee_nml
   !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
   !> @author Agustin Garcia
@@ -91,11 +89,15 @@ end subroutine lee_nml
 !                 |_|
 !
 implicit none
-integer :: IFLAG,NLEV,NFLAG
+!> Number of data groups following the header.
+integer :: NLEV  = 1;!>If set to 1, then there are surface variables following the header.
+integer :: NFLAG = 1
 integer :: i,j,k,icont
 real,parameter :: deg2rad= 4*ATAN(1.0)/180.0
-real :: tim,val
-character(len=8) stid(n_rama)
+!>The time of this report, in grid-relative units. Typically have the range of - 0.5 to 0.5
+real :: tim;!> value of the parameter to store
+real :: val
+character(len=8) stid(n_rama),inicia
 character(len=14) :: out_file,out_filctl
 !
 !     Writing RAMA data bases
@@ -103,60 +105,74 @@ character(len=14) :: out_file,out_filctl
     out_file='simat_'//anio//'.dat'
     out_filctl='simat'//anio//'.ctl'
     call logs('Storing data in dat file '//out_file)
-    open(unit=10,file=out_file,FORM='UNFORMATTED', RECORDTYPE='STREAM',&
-  & carriagecontrol='none',convert="big_endian")
-    NLEV =1
-    NFLAG=1
+    open(unit=10,file=out_file,FORM='UNFORMATTED',RECORDTYPE='STREAM'&
+    ,carriagecontrol='none'   , convert="big_endian")
     tim = 0.0
-   do i= 1, hpy   !Numero horas año
-    do j =1, n_rama    ! Stations number
-       if(est_util(j)) then
-          stid(j)= id_name(j)
-          write(10) stid(j),lat(j),lon(j),tim,NLEV,NFLAG
-          do icont =1,nvars ! Varible number
-            val=rama(i ,j ,icont)
-            if(icont.eq.2 .and.val.ne.rnulo)&
-            & val=rama(i,j,2)*sin(deg2rad*(180+rama(i,j,3)))
-            if(icont.eq.3 .and.val.ne.rnulo)&
-            & val=rama(i,j,2)*cos(deg2rad*(180+rama(i,j,3)))
-           write(10) val
-          end do  ! icont
-       end if   ! es util
+    do i= hr_ini, hr_end   !Numero horas año
+        do j =1, n_rama    ! Stations number
+           if(est_util(j)) then
+              stid(j)= id_name(j)
+              write(10) stid(j),lat(j),lon(j),tim,NLEV,NFLAG
+              do icont =1,nvars ! Varible number
+                val=rama(i ,j ,icont)
+                if(icont.eq.2 .and.val.ne.rnulo)&
+                & val=rama(i,j,2)*sin(deg2rad*(180+rama(i,j,3)))
+                if(icont.eq.3 .and.val.ne.rnulo)&
+                & val=rama(i,j,2)*cos(deg2rad*(180+rama(i,j,3)))
+               write(10) val
+              end do  ! icont
+           end if   ! es util
     end do  !j rama stations
     write(10) stid(1),lat(1),lon(1),tim,0,NFLAG
-end do ! i
-close(10)
+    end do ! i
+    close(10)
     call logs ('Writing '//out_filctl)
+    write(inicia,'("07z",A2,A3)') idia,num2char(imes)
     open (unit=20,file=out_filctl)
-	  write(20,'(A)')"dset ^"//out_file
-	  write(20,'(A)')"dtype station"
-	  write(20,'(A)')"options big_endian"
-	  write(20,'(A)')"stnmap ^simat"//anio//".map "
-	  write(20,'(A6,F6.2)')"undef ",rnulo
-	  write(20,'(A)')"title Met y Cons SIMAT ppb "//anio
-	  write(20,'(A5,I8,A27)')"tdef ",hpy," linear 7z01JAN"//anio//" 1hr"
-	  write(20,'(A5,I3)')"vars ",nvars
-	  write(20,'(A)')"t   0 99 Temperatura C  "
-	  write(20,'(A)')"u   0 99 Viento en x m/s"
-	  write(20,'(A)')"v   0 99 Viento en y m/s"
-	  write(20,'(A)')"rh  0 99 Humedad relativ"
-      write(20,'(A)')"pb  0 99 Press Bar  Pa"
-      write(20,'(A)')"o3  0 99 ozono  conc ppb"
-      write(20,'(A)')"co  0 99 CO  conc ppm   "
-      write(20,'(A)')"so2 0 99 SO2 conc ppb  "
-	  write(20,'(A)')"nox 0 99 NOx conc ppb  "
-	  write(20,'(A)')"no  0 99 NO  conc ppb "
-      write(20,'(A)')"no2 0 99 NO2 conc ppb "
-	  write(20,'(A)')"pm10 0 99  PM10  ug/m3 "
-      write(20,'(A)')"pm25 0 99  PM2.5 ug/m3 "
-      write(20,'(A)')"pmco 0 99  PMCO ug/m3 "
-      write(20,'(A)')"endvars"
+    write(20,'(A)')"DSET ^"//out_file
+    write(20,'(A)')"DTYPE station"
+    write(20,'(A)')"OPTIONS big_endian"
+   ! write(20,'(A)')"OPTIONS sequential"
+    write(20,'(A)')"STNMAP ^simat"//anio//".map "
+    write(20,'(A6,F6.2)')"UNDEF ",rnulo
+    write(20,'(A)')"title Meteo y Cont SIMAT ppb "//anio
+    write(20,'(A5,I8,A27)')&
+    "tdef ",hr_end-hr_ini+1," linear "//inicia//anio//" 1hr"
+    write(20,'(A5,I3)')"vars ",nvars
+    write(20,'(A)')"t   0 99 Temperatura C  "
+    write(20,'(A)')"u   0 99 Viento en x m/s"
+    write(20,'(A)')"v   0 99 Viento en y m/s"
+    write(20,'(A)')"rh  0 99 Humedad relativ"
+    write(20,'(A)')"pb  0 99 Press Bar  Pa"
+    write(20,'(A)')"o3  0 99 ozono  conc ppb"
+    write(20,'(A)')"co  0 99 CO  conc ppm   "
+    write(20,'(A)')"so2 0 99 SO2 conc ppb  "
+    write(20,'(A)')"nox 0 99 NOx conc ppb  "
+    write(20,'(A)')"no  0 99 NO  conc ppb "
+    write(20,'(A)')"no2 0 99 NO2 conc ppb "
+    write(20,'(A)')"pm10 0 99  PM10  ug/m3 "
+    write(20,'(A)')"pm25 0 99  PM2.5 ug/m3 "
+    write(20,'(A)')"pmco 0 99  PMCO ug/m3 "
+    write(20,'(A)')"endvars"
+    if(allocated(rama)) deallocate(rama)
+    if(allocated(lat)) deallocate(lat)
+    if(allocated(lon)) deallocate(lon)
+    if(allocated(id_name)) deallocate(id_name)
+    if(allocated(id_name)) deallocate(id_name)
+    if(allocated(msn)) deallocate(msn)
+    if(allocated(est_util)) deallocate(est_util)
 end subroutine output
 !> @brief Reads SIMAT database filesand stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 16/08/2020.
 !> @version  3.0
-!> @param file_read file to read
+!> @param file_read datafile from SIMAT to be read
+!  _                   _                 _          _       _
+! | | ___  ___     ___(_)_ __ ___   __ _| |_     __| | __ _| |_ __ _
+! | |/ _ \/ _ \   / __| | '_ ` _ \ / _` | __|   / _` |/ _` | __/ _` |
+! | |  __/  __/   \__ \ | | | | | | (_| | |_   | (_| | (_| | || (_| |
+! |_|\___|\___|___|___/_|_| |_| |_|\__,_|\__|___\__,_|\__,_|\__\__,_|
+!            |_____|                       |_____|
 subroutine lee_simat_data(file_read)
 implicit none
 integer :: i,ifile
@@ -174,6 +190,10 @@ character(len=10) ::fecha
 character(len=5)  :: hora
 character(len=3)  :: c_id,cvar
 
+if (.not. allocated(rama)) then
+    allocate(rama(hrs_yr,n_rama,nvars))
+    rama=rnulo
+end if
 open (newunit=ifile,file=file_read,status='old',action='read')
 !reading headings
     do i=1,11
@@ -187,13 +207,11 @@ open (newunit=ifile,file=file_read,status='old',action='read')
         ifecha= hourinyr(fecha,hora)
         ist = estacion(c_id)
         ivar = vconvert(cvar)
-        
         if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*mmHg2Pa
         if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
         if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
         !print *,ifecha,ist,ivar,rval
         rama(ifecha,ist,ivar)=rval
-    !     if(ifecha.eq.hpy) salir=.false.
     end do  !salir
 
 200 close(ifile)
@@ -275,15 +293,35 @@ integer function vconvert(cvar)
 ! Identifies the variables id
     character (len=3),intent(in) ::cvar
     character(len=3),dimension(nvars):: parametro
-    parametro=["TMP","WSP","WDR","RH","PBa","O3","CO",&
-               "SO2","NOX","NO","NO2","PM1","PM2","PMC"]
+    parametro=["TMP","WSP","WDR","RH ","PBa","O3 ","CO ",&
+               "SO2","NOX","NO ","NO2","PM1","PM2","PMC"]
     do i=1,size(parametro)
-        if(trim(cvar).eq.parametro(i)) then
+        if(trim(cvar).eq.trim(parametro(i))) then
             vconvert=i
             return
         end if
     end do
     vconvert=-99
+    return
+end function
+!> @brief converts number mont to name
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  3.0
+!> @param month number to convert
+!                        ____      _
+!  _ __  _   _ _ __ ___ |___ \ ___| |__   __ _ _ __
+! | '_ \| | | | '_ ` _ \  __) / __| '_ \ / _` | '__|
+! | | | | |_| | | | | | |/ __/ (__| | | | (_| | |
+! |_| |_|\__,_|_| |_| |_|_____\___|_| |_|\__,_|_|
+character(len=3) function num2char(month)
+    character(len=*),intent(IN):: month
+    character(len=3),dimension(12)::cmonth
+    integer :: im
+    read(month,'(I2)') im
+    cmonth=["JAN","FEB","MAR","APR","MAY","JUN",&
+            "JUL","AUG","SEP","OCT","NOV","DEC"]
+    num2char=cmonth(im)
     return
 end function
 !> @brief  Obtains the number of hours in a year  from date and hour

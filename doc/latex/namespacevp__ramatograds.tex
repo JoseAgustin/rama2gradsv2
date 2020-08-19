@@ -1,0 +1,693 @@
+\hypertarget{namespacevp__ramatograds}{}\doxysection{vp\+\_\+ramatograds Module Reference}
+\label{namespacevp__ramatograds}\index{vp\_ramatograds@{vp\_ramatograds}}
+
+
+Variables used for the conversion from ascii to bin format.  
+
+
+\doxysubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \mbox{\hyperlink{namespacevp__ramatograds_ac36193f82e5e060cfa46b80c4a492931}{lee\+\_\+nml}} (fnml)
+\begin{DoxyCompactList}\small\item\em read namelist input file for selecting specific days \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacevp__ramatograds_acd90c22cf38fe1cbcf9341f019375d13}{output}}
+\begin{DoxyCompactList}\small\item\em Creates binary file (simat\+\_\+2011.\+dat) and descripting file (simat2011.\+ctl) for \href{http://cola.gmu.edu/grads/}{\texttt{ Gr\+A\+DS}} \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacevp__ramatograds_a064bef32d4ebfee33ce17b29f6b7f954}{lee\+\_\+simat\+\_\+data}} (file\+\_\+read)
+\begin{DoxyCompactList}\small\item\em Reads S\+I\+M\+AT database filesand stores values in matrix rama. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacevp__ramatograds_a8966bd96291072129799ff357b72de77}{lee\+\_\+estaciones\+\_\+rama}}
+\begin{DoxyCompactList}\small\item\em Reads est\+\_\+rama.\+txt file containing localization stations. \end{DoxyCompactList}\item 
+integer function \mbox{\hyperlink{namespacevp__ramatograds_a6cdccf9aeb23b886b10151d6ba40a693}{estacion}} (cvar)
+\begin{DoxyCompactList}\small\item\em Identify the statios in the data set. \end{DoxyCompactList}\item 
+integer function \mbox{\hyperlink{namespacevp__ramatograds_a29018bb27be9586c45b0df1e131971d7}{vconvert}} (cvar)
+\begin{DoxyCompactList}\small\item\em Set ID number to the variable name. \end{DoxyCompactList}\item 
+character(len=3) function \mbox{\hyperlink{namespacevp__ramatograds_aea941dd68eacec669b52785e30bb2629}{num2char}} (month)
+\begin{DoxyCompactList}\small\item\em converts number mont to name \end{DoxyCompactList}\item 
+integer function \mbox{\hyperlink{namespacevp__ramatograds_a1b911111781b3f1d91b0628b17e5f2d6}{hourinyr}} (date, hora)
+\begin{DoxyCompactList}\small\item\em Obtains the number of hours in a year from date and hour. \end{DoxyCompactList}\item 
+integer function \mbox{\hyperlink{namespacevp__ramatograds_ab2e53f1dbd7bdaee6098f19fa990dd85}{cuenta}} (iunit)
+\begin{DoxyCompactList}\small\item\em count the number of rowns in a file \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacevp__ramatograds_ac20f0a10aa2f6332a339abcfdb62ac50}{logs}} (texto)
+\begin{DoxyCompactList}\small\item\em display log during different program stages \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real, parameter \mbox{\hyperlink{namespacevp__ramatograds_af78762b92ba9abc656d92224003ed8fc}{rnulo}} =-\/99.
+\begin{DoxyCompactList}\small\item\em number used for represent null value \end{DoxyCompactList}\item 
+integer, parameter \mbox{\hyperlink{namespacevp__ramatograds_a23288ac8644b25b41fc70c33510032eb}{nvars}} =14
+\begin{DoxyCompactList}\small\item\em S\+I\+M\+A\+T/\+R\+A\+MA variables (T\+MP,W\+SP,W\+MD,RH,P\+Ba, O3,S\+O2,N\+Ox,N\+O2,NO,CO,P\+M10,P\+M25,P\+M\+CO) \end{DoxyCompactList}\item 
+integer \mbox{\hyperlink{namespacevp__ramatograds_a54ca6c48c8fd24f7f2d5425b209a4c4d}{n\+\_\+ramau}}
+\begin{DoxyCompactList}\small\item\em Number of stations in output file. \end{DoxyCompactList}\item 
+integer \mbox{\hyperlink{namespacevp__ramatograds_acf10ee56f57d5058db105c15c4c91dd0}{n\+\_\+rama}} =65
+\begin{DoxyCompactList}\small\item\em n\+\_\+rama Number of stations in localization file est\+\_\+rama.\+txt \end{DoxyCompactList}\item 
+integer \mbox{\hyperlink{namespacevp__ramatograds_ae41ef9a6d43792049b162e1e3cb6d54c}{hrs\+\_\+yr}}
+\begin{DoxyCompactList}\small\item\em Total hour in year. \end{DoxyCompactList}\item 
+integer \mbox{\hyperlink{namespacevp__ramatograds_a1aa788b5dafcd27911858ad6a0b36d9c}{hr\+\_\+ini}}
+\begin{DoxyCompactList}\small\item\em Initial hour in year for the storing data. \end{DoxyCompactList}\item 
+integer \mbox{\hyperlink{namespacevp__ramatograds_a7795062771005033af2b9e4e926016ff}{hr\+\_\+end}}
+\begin{DoxyCompactList}\small\item\em End hour in year for the storing data. \end{DoxyCompactList}\item 
+real, dimension(\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_a705324ceb4c5be020b3300145021f64b}{lon}}
+\begin{DoxyCompactList}\small\item\em longitud localization of S\+I\+M\+AT station \end{DoxyCompactList}\item 
+real, dimension(\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_a7f527559437aa9b0a58df097ef165df1}{lat}}
+\begin{DoxyCompactList}\small\item\em latitude localization of S\+I\+M\+AT station \end{DoxyCompactList}\item 
+real, dimension(\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_ae12c69467751f4f84d63b6cf3bfa733e}{msn}}
+\begin{DoxyCompactList}\small\item\em Altitude of station. \end{DoxyCompactList}\item 
+real, dimension(\+:,\+:,\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_aab644679760bc7dbf07378b8f2b6e249}{rama}}
+\begin{DoxyCompactList}\small\item\em Array with all data for all the time period and stations. \end{DoxyCompactList}\item 
+character(len=3), dimension(\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_a7520d725a60db119776e63e85c1cf38e}{id\+\_\+name}}
+\begin{DoxyCompactList}\small\item\em Station identification name. \end{DoxyCompactList}\item 
+character(len=4) \mbox{\hyperlink{namespacevp__ramatograds_a57f632914088296f3f43121b1c493151}{anio}}
+\begin{DoxyCompactList}\small\item\em year from input data \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_ac2b74de1b5ca917a4335b9d0c1c8e097}{idia}}
+\begin{DoxyCompactList}\small\item\em start day for output \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_a018bfa10849b29dbf4430b453174546d}{imes}}
+\begin{DoxyCompactList}\small\item\em start month for output \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_aa0f779fb106273630d4b99da9ebea8f1}{fdia}}
+\begin{DoxyCompactList}\small\item\em end day for output \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_abd3a302d937b05db1c94a9e00bf60e88}{fmes}}
+\begin{DoxyCompactList}\small\item\em end month for output \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_a33b6e4b90259bc0e0d03b4fd024a2dbb}{ihr}}
+\begin{DoxyCompactList}\small\item\em start hour for output \end{DoxyCompactList}\item 
+character(len=2) \mbox{\hyperlink{namespacevp__ramatograds_a372107cec1be08d05c8991883d9ffa74}{fhr}}
+\begin{DoxyCompactList}\small\item\em end hour for output \end{DoxyCompactList}\item 
+character(len=23) \mbox{\hyperlink{namespacevp__ramatograds_adcc2bc203620d502cf72d2159fb962c6}{met\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em S\+I\+M\+AT meteorological data file. \end{DoxyCompactList}\item 
+character(len=23) \mbox{\hyperlink{namespacevp__ramatograds_a5ab9c74a83957f05cd1b3a57bf0b18cc}{pol\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em S\+I\+M\+AT pollution data file. \end{DoxyCompactList}\item 
+logical, dimension(\+:), allocatable \mbox{\hyperlink{namespacevp__ramatograds_a6e2dd95d67fb73a63f043c6516f34eb4}{est\+\_\+util}}
+\begin{DoxyCompactList}\small\item\em used stations from est\+\_\+rama.\+txt \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Variables used for the conversion from ascii to bin format. 
+
+\begin{DoxyAuthor}{Author}
+Dr. Agustin Garcia Reynoso 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020,2016,2004 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico. 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{namespacevp__ramatograds_ab2e53f1dbd7bdaee6098f19fa990dd85}\label{namespacevp__ramatograds_ab2e53f1dbd7bdaee6098f19fa990dd85}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!cuenta@{cuenta}}
+\index{cuenta@{cuenta}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{cuenta()}{cuenta()}}
+{\footnotesize\ttfamily integer function vp\+\_\+ramatograds\+::cuenta (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{iunit }\end{DoxyParamCaption})}
+
+
+
+count the number of rowns in a file 
+
+\begin{DoxyAuthor}{Author}
+Jose Agustin Garcia Reynoso 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+07/13/2020 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico 2020 
+\end{DoxyCopyright}
+
+\begin{DoxyParams}{Parameters}
+{\em iunit} & file unit where the count has to be made \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 378 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a6cdccf9aeb23b886b10151d6ba40a693}\label{namespacevp__ramatograds_a6cdccf9aeb23b886b10151d6ba40a693}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!estacion@{estacion}}
+\index{estacion@{estacion}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{estacion()}{estacion()}}
+{\footnotesize\ttfamily integer function vp\+\_\+ramatograds\+::estacion (\begin{DoxyParamCaption}\item[{character (len=3), intent(in)}]{cvar }\end{DoxyParamCaption})}
+
+
+
+Identify the statios in the data set. 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 station name for identification 
+\end{DoxyVersion}
+
+
+Definition at line 269 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a1b911111781b3f1d91b0628b17e5f2d6}\label{namespacevp__ramatograds_a1b911111781b3f1d91b0628b17e5f2d6}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!hourinyr@{hourinyr}}
+\index{hourinyr@{hourinyr}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{hourinyr()}{hourinyr()}}
+{\footnotesize\ttfamily integer function vp\+\_\+ramatograds\+::hourinyr (\begin{DoxyParamCaption}\item[{character(len=10), intent(in)}]{date,  }\item[{character (len=5), intent(in)}]{hora }\end{DoxyParamCaption})}
+
+
+
+Obtains the number of hours in a year from date and hour. 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+2 
+\end{DoxyVersion}
+
+\begin{DoxyParams}{Parameters}
+{\em date} & DD--M\+M-\/\+Y\+Y\+YY date format \\
+\hline
+{\em hora} & Day hour \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 338 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a8966bd96291072129799ff357b72de77}\label{namespacevp__ramatograds_a8966bd96291072129799ff357b72de77}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!lee\_estaciones\_rama@{lee\_estaciones\_rama}}
+\index{lee\_estaciones\_rama@{lee\_estaciones\_rama}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{lee\_estaciones\_rama()}{lee\_estaciones\_rama()}}
+{\footnotesize\ttfamily subroutine vp\+\_\+ramatograds\+::lee\+\_\+estaciones\+\_\+rama}
+
+
+
+Reads est\+\_\+rama.\+txt file containing localization stations. 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico. 
+\end{DoxyCopyright}
+
+
+Definition at line 239 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_ac36193f82e5e060cfa46b80c4a492931}\label{namespacevp__ramatograds_ac36193f82e5e060cfa46b80c4a492931}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!lee\_nml@{lee\_nml}}
+\index{lee\_nml@{lee\_nml}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{lee\_nml()}{lee\_nml()}}
+{\footnotesize\ttfamily subroutine vp\+\_\+ramatograds\+::lee\+\_\+nml (\begin{DoxyParamCaption}\item[{character(len=$\ast$), intent(in)}]{fnml }\end{DoxyParamCaption})}
+
+
+
+read namelist input file for selecting specific days 
+
+\begin{DoxyAuthor}{Author}
+Jose Agustin Garcia Reynoso 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+08/02/2020 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+0 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico 
+\end{DoxyCopyright}
+
+\begin{DoxyParams}{Parameters}
+{\em fnml} & namelist file name \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 56 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a064bef32d4ebfee33ce17b29f6b7f954}\label{namespacevp__ramatograds_a064bef32d4ebfee33ce17b29f6b7f954}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!lee\_simat\_data@{lee\_simat\_data}}
+\index{lee\_simat\_data@{lee\_simat\_data}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{lee\_simat\_data()}{lee\_simat\_data()}}
+{\footnotesize\ttfamily subroutine vp\+\_\+ramatograds\+::lee\+\_\+simat\+\_\+data (\begin{DoxyParamCaption}\item[{character(len=$\ast$), intent(in)}]{file\+\_\+read }\end{DoxyParamCaption})}
+
+
+
+Reads S\+I\+M\+AT database filesand stores values in matrix rama. 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+16/08/2020. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+
+\begin{DoxyParams}{Parameters}
+{\em file\+\_\+read} & datafile from S\+I\+M\+AT to be read \\
+\hline
+\end{DoxyParams}
+conversion de mm\+Hg a Pa
+
+Definition at line 176 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_ac20f0a10aa2f6332a339abcfdb62ac50}\label{namespacevp__ramatograds_ac20f0a10aa2f6332a339abcfdb62ac50}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!logs@{logs}}
+\index{logs@{logs}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{logs()}{logs()}}
+{\footnotesize\ttfamily subroutine vp\+\_\+ramatograds\+::logs (\begin{DoxyParamCaption}\item[{character(len=$\ast$), intent(in)}]{texto }\end{DoxyParamCaption})}
+
+
+
+display log during different program stages 
+
+\begin{DoxyAuthor}{Author}
+Jose Agustin Garcia Reynoso 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+08/08/2020 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico 2020 
+\end{DoxyCopyright}
+
+\begin{DoxyParams}{Parameters}
+{\em texto} & text to be displayed \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 403 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_aea941dd68eacec669b52785e30bb2629}\label{namespacevp__ramatograds_aea941dd68eacec669b52785e30bb2629}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!num2char@{num2char}}
+\index{num2char@{num2char}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{num2char()}{num2char()}}
+{\footnotesize\ttfamily character(len=3) function vp\+\_\+ramatograds\+::num2char (\begin{DoxyParamCaption}\item[{character(len=$\ast$), intent(in)}]{month }\end{DoxyParamCaption})}
+
+
+
+converts number mont to name 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+
+\begin{DoxyParams}{Parameters}
+{\em month} & number to convert \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 316 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_acd90c22cf38fe1cbcf9341f019375d13}\label{namespacevp__ramatograds_acd90c22cf38fe1cbcf9341f019375d13}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!output@{output}}
+\index{output@{output}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{output()}{output()}}
+{\footnotesize\ttfamily subroutine vp\+\_\+ramatograds\+::output}
+
+
+
+Creates binary file (simat\+\_\+2011.\+dat) and descripting file (simat2011.\+ctl) for \href{http://cola.gmu.edu/grads/}{\texttt{ Gr\+A\+DS}} 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+Number of data groups following the header.
+
+If set to 1, then there are surface variables following the header.
+
+The time of this report, in grid-\/relative units. Typically have the range of -\/ 0.\+5 to 0.\+5
+
+value of the parameter to store
+
+Definition at line 84 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a29018bb27be9586c45b0df1e131971d7}\label{namespacevp__ramatograds_a29018bb27be9586c45b0df1e131971d7}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!vconvert@{vconvert}}
+\index{vconvert@{vconvert}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{vconvert()}{vconvert()}}
+{\footnotesize\ttfamily integer function vp\+\_\+ramatograds\+::vconvert (\begin{DoxyParamCaption}\item[{character (len=3), intent(in)}]{cvar }\end{DoxyParamCaption})}
+
+
+
+Set ID number to the variable name. 
+
+\begin{DoxyAuthor}{Author}
+Agustin Garcia 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28/08/2012. 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+0 
+\end{DoxyVersion}
+
+\begin{DoxyParams}{Parameters}
+{\em cvar} & name of the variable to convert \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 286 of file mod\+\_\+rama2grads.\+F90.
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespacevp__ramatograds_a57f632914088296f3f43121b1c493151}\label{namespacevp__ramatograds_a57f632914088296f3f43121b1c493151}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!anio@{anio}}
+\index{anio@{anio}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{anio}{anio}}
+{\footnotesize\ttfamily character(len=4) vp\+\_\+ramatograds\+::anio}
+
+
+
+year from input data 
+
+
+
+Definition at line 35 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a6e2dd95d67fb73a63f043c6516f34eb4}\label{namespacevp__ramatograds_a6e2dd95d67fb73a63f043c6516f34eb4}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!est\_util@{est\_util}}
+\index{est\_util@{est\_util}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{est\_util}{est\_util}}
+{\footnotesize\ttfamily logical, dimension(\+:), allocatable vp\+\_\+ramatograds\+::est\+\_\+util}
+
+
+
+used stations from est\+\_\+rama.\+txt 
+
+
+
+Definition at line 44 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_aa0f779fb106273630d4b99da9ebea8f1}\label{namespacevp__ramatograds_aa0f779fb106273630d4b99da9ebea8f1}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!fdia@{fdia}}
+\index{fdia@{fdia}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{fdia}{fdia}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::fdia}
+
+
+
+end day for output 
+
+
+
+Definition at line 38 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a372107cec1be08d05c8991883d9ffa74}\label{namespacevp__ramatograds_a372107cec1be08d05c8991883d9ffa74}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!fhr@{fhr}}
+\index{fhr@{fhr}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{fhr}{fhr}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::fhr}
+
+
+
+end hour for output 
+
+
+
+Definition at line 41 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_abd3a302d937b05db1c94a9e00bf60e88}\label{namespacevp__ramatograds_abd3a302d937b05db1c94a9e00bf60e88}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!fmes@{fmes}}
+\index{fmes@{fmes}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{fmes}{fmes}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::fmes}
+
+
+
+end month for output 
+
+
+
+Definition at line 39 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a7795062771005033af2b9e4e926016ff}\label{namespacevp__ramatograds_a7795062771005033af2b9e4e926016ff}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!hr\_end@{hr\_end}}
+\index{hr\_end@{hr\_end}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{hr\_end}{hr\_end}}
+{\footnotesize\ttfamily integer vp\+\_\+ramatograds\+::hr\+\_\+end}
+
+
+
+End hour in year for the storing data. 
+
+
+
+Definition at line 27 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a1aa788b5dafcd27911858ad6a0b36d9c}\label{namespacevp__ramatograds_a1aa788b5dafcd27911858ad6a0b36d9c}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!hr\_ini@{hr\_ini}}
+\index{hr\_ini@{hr\_ini}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{hr\_ini}{hr\_ini}}
+{\footnotesize\ttfamily integer vp\+\_\+ramatograds\+::hr\+\_\+ini}
+
+
+
+Initial hour in year for the storing data. 
+
+
+
+Definition at line 26 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_ae41ef9a6d43792049b162e1e3cb6d54c}\label{namespacevp__ramatograds_ae41ef9a6d43792049b162e1e3cb6d54c}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!hrs\_yr@{hrs\_yr}}
+\index{hrs\_yr@{hrs\_yr}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{hrs\_yr}{hrs\_yr}}
+{\footnotesize\ttfamily integer vp\+\_\+ramatograds\+::hrs\+\_\+yr}
+
+
+
+Total hour in year. 
+
+
+
+Definition at line 25 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a7520d725a60db119776e63e85c1cf38e}\label{namespacevp__ramatograds_a7520d725a60db119776e63e85c1cf38e}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!id\_name@{id\_name}}
+\index{id\_name@{id\_name}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{id\_name}{id\_name}}
+{\footnotesize\ttfamily character(len=3), dimension(\+:), allocatable vp\+\_\+ramatograds\+::id\+\_\+name}
+
+
+
+Station identification name. 
+
+
+
+Definition at line 33 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_ac2b74de1b5ca917a4335b9d0c1c8e097}\label{namespacevp__ramatograds_ac2b74de1b5ca917a4335b9d0c1c8e097}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!idia@{idia}}
+\index{idia@{idia}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{idia}{idia}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::idia}
+
+
+
+start day for output 
+
+
+
+Definition at line 36 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a33b6e4b90259bc0e0d03b4fd024a2dbb}\label{namespacevp__ramatograds_a33b6e4b90259bc0e0d03b4fd024a2dbb}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!ihr@{ihr}}
+\index{ihr@{ihr}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{ihr}{ihr}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::ihr}
+
+
+
+start hour for output 
+
+
+
+Definition at line 40 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a018bfa10849b29dbf4430b453174546d}\label{namespacevp__ramatograds_a018bfa10849b29dbf4430b453174546d}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!imes@{imes}}
+\index{imes@{imes}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{imes}{imes}}
+{\footnotesize\ttfamily character(len=2) vp\+\_\+ramatograds\+::imes}
+
+
+
+start month for output 
+
+
+
+Definition at line 37 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a7f527559437aa9b0a58df097ef165df1}\label{namespacevp__ramatograds_a7f527559437aa9b0a58df097ef165df1}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!lat@{lat}}
+\index{lat@{lat}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{lat}{lat}}
+{\footnotesize\ttfamily real, dimension(\+:), allocatable vp\+\_\+ramatograds\+::lat}
+
+
+
+latitude localization of S\+I\+M\+AT station 
+
+
+
+Definition at line 30 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a705324ceb4c5be020b3300145021f64b}\label{namespacevp__ramatograds_a705324ceb4c5be020b3300145021f64b}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!lon@{lon}}
+\index{lon@{lon}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{lon}{lon}}
+{\footnotesize\ttfamily real, dimension(\+:), allocatable vp\+\_\+ramatograds\+::lon}
+
+
+
+longitud localization of S\+I\+M\+AT station 
+
+
+
+Definition at line 29 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_adcc2bc203620d502cf72d2159fb962c6}\label{namespacevp__ramatograds_adcc2bc203620d502cf72d2159fb962c6}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!met\_file@{met\_file}}
+\index{met\_file@{met\_file}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{met\_file}{met\_file}}
+{\footnotesize\ttfamily character(len=23) vp\+\_\+ramatograds\+::met\+\_\+file}
+
+
+
+S\+I\+M\+AT meteorological data file. 
+
+
+
+Definition at line 42 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_ae12c69467751f4f84d63b6cf3bfa733e}\label{namespacevp__ramatograds_ae12c69467751f4f84d63b6cf3bfa733e}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!msn@{msn}}
+\index{msn@{msn}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{msn}{msn}}
+{\footnotesize\ttfamily real, dimension(\+:), allocatable vp\+\_\+ramatograds\+::msn}
+
+
+
+Altitude of station. 
+
+
+
+Definition at line 31 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_acf10ee56f57d5058db105c15c4c91dd0}\label{namespacevp__ramatograds_acf10ee56f57d5058db105c15c4c91dd0}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!n\_rama@{n\_rama}}
+\index{n\_rama@{n\_rama}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{n\_rama}{n\_rama}}
+{\footnotesize\ttfamily integer vp\+\_\+ramatograds\+::n\+\_\+rama =65}
+
+
+
+n\+\_\+rama Number of stations in localization file est\+\_\+rama.\+txt 
+
+
+
+Definition at line 24 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a54ca6c48c8fd24f7f2d5425b209a4c4d}\label{namespacevp__ramatograds_a54ca6c48c8fd24f7f2d5425b209a4c4d}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!n\_ramau@{n\_ramau}}
+\index{n\_ramau@{n\_ramau}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{n\_ramau}{n\_ramau}}
+{\footnotesize\ttfamily integer vp\+\_\+ramatograds\+::n\+\_\+ramau}
+
+
+
+Number of stations in output file. 
+
+
+
+Definition at line 22 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a23288ac8644b25b41fc70c33510032eb}\label{namespacevp__ramatograds_a23288ac8644b25b41fc70c33510032eb}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!nvars@{nvars}}
+\index{nvars@{nvars}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{nvars}{nvars}}
+{\footnotesize\ttfamily integer, parameter vp\+\_\+ramatograds\+::nvars =14}
+
+
+
+S\+I\+M\+A\+T/\+R\+A\+MA variables (T\+MP,W\+SP,W\+MD,RH,P\+Ba, O3,S\+O2,N\+Ox,N\+O2,NO,CO,P\+M10,P\+M25,P\+M\+CO) 
+
+
+
+Definition at line 21 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_a5ab9c74a83957f05cd1b3a57bf0b18cc}\label{namespacevp__ramatograds_a5ab9c74a83957f05cd1b3a57bf0b18cc}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!pol\_file@{pol\_file}}
+\index{pol\_file@{pol\_file}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{pol\_file}{pol\_file}}
+{\footnotesize\ttfamily character(len=23) vp\+\_\+ramatograds\+::pol\+\_\+file}
+
+
+
+S\+I\+M\+AT pollution data file. 
+
+
+
+Definition at line 43 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_aab644679760bc7dbf07378b8f2b6e249}\label{namespacevp__ramatograds_aab644679760bc7dbf07378b8f2b6e249}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!rama@{rama}}
+\index{rama@{rama}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{rama}{rama}}
+{\footnotesize\ttfamily real, dimension(\+:,\+:,\+:), allocatable vp\+\_\+ramatograds\+::rama}
+
+
+
+Array with all data for all the time period and stations. 
+
+
+
+Definition at line 32 of file mod\+\_\+rama2grads.\+F90.
+
+\mbox{\Hypertarget{namespacevp__ramatograds_af78762b92ba9abc656d92224003ed8fc}\label{namespacevp__ramatograds_af78762b92ba9abc656d92224003ed8fc}} 
+\index{vp\_ramatograds@{vp\_ramatograds}!rnulo@{rnulo}}
+\index{rnulo@{rnulo}!vp\_ramatograds@{vp\_ramatograds}}
+\doxysubsubsection{\texorpdfstring{rnulo}{rnulo}}
+{\footnotesize\ttfamily real, parameter vp\+\_\+ramatograds\+::rnulo =-\/99.}
+
+
+
+number used for represent null value 
+
+
+
+Definition at line 19 of file mod\+\_\+rama2grads.\+F90.
+

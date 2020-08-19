@@ -1,0 +1,175 @@
+\hypertarget{namespacevariables}{}\doxysection{variables Module Reference}
+\label{namespacevariables}\index{variables@{variables}}
+
+
+Variables used for the conversion from ascii to bin format.  
+
+
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+integer \mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}
+\item 
+integer \mbox{\hyperlink{namespacevariables_a610343c634e87f7e10d86c83b03716ad}{n\+\_\+ramau}}
+\item 
+integer \mbox{\hyperlink{namespacevariables_a51e5521b1bbabf738b6f8d55ef70bcc0}{hpy}}
+\item 
+integer \mbox{\hyperlink{namespacevariables_a8a3acc117cbd117c2915fe48b684345e}{nvars}}
+\item 
+real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) \mbox{\hyperlink{namespacevariables_a5eacd82920f201d25af1f3309baadb12}{lon}}
+\item 
+real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) \mbox{\hyperlink{namespacevariables_ad5944c34d2ccfad1458601a7622aa284}{lat}}
+\item 
+real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) \mbox{\hyperlink{namespacevariables_a8d780ccc5009697b062ddbe987117154}{msn}}
+\item 
+real, dimension(\mbox{\hyperlink{namespacevariables_a51e5521b1bbabf738b6f8d55ef70bcc0}{hpy}}, \mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}, \mbox{\hyperlink{namespacevariables_a8a3acc117cbd117c2915fe48b684345e}{nvars}}) \mbox{\hyperlink{namespacevariables_a3edc3c18e6108f66d1e6b3db39fa61e2}{rama}}
+\item 
+character(len=3), dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) \mbox{\hyperlink{namespacevariables_a7df6785446d1f1ad4a0c4afe8041b6c3}{id\+\_\+name}}
+\item 
+logical, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) \mbox{\hyperlink{namespacevariables_a2346a5cd2c4555f26e2d28728d3ce508}{est\+\_\+util}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Variables used for the conversion from ascii to bin format. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+rama} & Number of stations in localization file \mbox{\hyperlink{est__rama_8txt}{est\+\_\+rama.\+txt}} \\
+\hline
+{\em n\+\_\+ramau} & Number of stations in output file \\
+\hline
+{\em hpy} & Number of hours per year \\
+\hline
+{\em nvars} & S\+I\+M\+A\+T/\+R\+A\+MA variables (T\+MP,W\+SP,W\+MD,RH,P\+Ba,O3,S\+O2,N\+Ox,N\+O2,NO,CO,P\+M10,P\+M2.\+5) \\
+\hline
+{\em rnulo} & Null value if missing \\
+\hline
+{\em lon} & longitud localization for rama station \\
+\hline
+{\em lat} & latitude localization for rama station \\
+\hline
+{\em msn} & Station Altitud \\
+\hline
+{\em rama} & Array with all data for all the time period and stations \\
+\hline
+{\em id\+\_\+name} & ID of the station \\
+\hline
+{\em est\+\_\+util} & true if the station contains data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyAuthor}{Author}
+Dr. Agustin Garcia Reynoso 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020,2016,2004 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+1 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+Universidad Nacional Autonoma de Mexico. 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespacevariables_a2346a5cd2c4555f26e2d28728d3ce508}\label{namespacevariables_a2346a5cd2c4555f26e2d28728d3ce508}} 
+\index{variables@{variables}!est\_util@{est\_util}}
+\index{est\_util@{est\_util}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{est\_util}{est\_util}}
+{\footnotesize\ttfamily logical, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) variables\+::est\+\_\+util}
+
+
+
+Definition at line 37 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a51e5521b1bbabf738b6f8d55ef70bcc0}\label{namespacevariables_a51e5521b1bbabf738b6f8d55ef70bcc0}} 
+\index{variables@{variables}!hpy@{hpy}}
+\index{hpy@{hpy}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{hpy}{hpy}}
+{\footnotesize\ttfamily integer variables\+::hpy}
+
+
+
+Definition at line 29 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a7df6785446d1f1ad4a0c4afe8041b6c3}\label{namespacevariables_a7df6785446d1f1ad4a0c4afe8041b6c3}} 
+\index{variables@{variables}!id\_name@{id\_name}}
+\index{id\_name@{id\_name}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{id\_name}{id\_name}}
+{\footnotesize\ttfamily character(len=3), dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) variables\+::id\+\_\+name}
+
+
+
+Definition at line 36 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_ad5944c34d2ccfad1458601a7622aa284}\label{namespacevariables_ad5944c34d2ccfad1458601a7622aa284}} 
+\index{variables@{variables}!lat@{lat}}
+\index{lat@{lat}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{lat}{lat}}
+{\footnotesize\ttfamily real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) variables\+::lat}
+
+
+
+Definition at line 34 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a5eacd82920f201d25af1f3309baadb12}\label{namespacevariables_a5eacd82920f201d25af1f3309baadb12}} 
+\index{variables@{variables}!lon@{lon}}
+\index{lon@{lon}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{lon}{lon}}
+{\footnotesize\ttfamily real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) variables\+::lon}
+
+
+
+Definition at line 34 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a8d780ccc5009697b062ddbe987117154}\label{namespacevariables_a8d780ccc5009697b062ddbe987117154}} 
+\index{variables@{variables}!msn@{msn}}
+\index{msn@{msn}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{msn}{msn}}
+{\footnotesize\ttfamily real, dimension(\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}}) variables\+::msn}
+
+
+
+Definition at line 34 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}\label{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}} 
+\index{variables@{variables}!n\_rama@{n\_rama}}
+\index{n\_rama@{n\_rama}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{n\_rama}{n\_rama}}
+{\footnotesize\ttfamily integer variables\+::n\+\_\+rama}
+
+
+
+Definition at line 29 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a610343c634e87f7e10d86c83b03716ad}\label{namespacevariables_a610343c634e87f7e10d86c83b03716ad}} 
+\index{variables@{variables}!n\_ramau@{n\_ramau}}
+\index{n\_ramau@{n\_ramau}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{n\_ramau}{n\_ramau}}
+{\footnotesize\ttfamily integer variables\+::n\+\_\+ramau}
+
+
+
+Definition at line 29 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a8a3acc117cbd117c2915fe48b684345e}\label{namespacevariables_a8a3acc117cbd117c2915fe48b684345e}} 
+\index{variables@{variables}!nvars@{nvars}}
+\index{nvars@{nvars}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{nvars}{nvars}}
+{\footnotesize\ttfamily integer variables\+::nvars}
+
+
+
+Definition at line 29 of file rama2gradsv2.\+F90.
+
+\mbox{\Hypertarget{namespacevariables_a3edc3c18e6108f66d1e6b3db39fa61e2}\label{namespacevariables_a3edc3c18e6108f66d1e6b3db39fa61e2}} 
+\index{variables@{variables}!rama@{rama}}
+\index{rama@{rama}!variables@{variables}}
+\doxysubsubsection{\texorpdfstring{rama}{rama}}
+{\footnotesize\ttfamily real, dimension(\mbox{\hyperlink{namespacevariables_a51e5521b1bbabf738b6f8d55ef70bcc0}{hpy}},\mbox{\hyperlink{namespacevariables_a809e0dfa157ee9282b5f702b72cb1974}{n\+\_\+rama}},\mbox{\hyperlink{namespacevariables_a8a3acc117cbd117c2915fe48b684345e}{nvars}}) variables\+::rama}
+
+
+
+Definition at line 35 of file rama2gradsv2.\+F90.
+

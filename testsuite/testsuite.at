@@ -9,3 +9,8 @@ AT_CLEANUP
 AT_SETUP([Subroutine lee_namelist est leest simat])
 AT_TESTED([ test5 test6 test7 test8])
 AT_CLEANUP
+AT_SETUP([Subroutine output])
+AT_TESTED([ test9 test10])
+AT_CLEANUP
+
+

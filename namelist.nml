@@ -1,11 +1,9 @@
 &FECHA
 anio="2011"
-imes="02"
-fmes="03"
-idia=18
-fdia=23
-ihr=01
-fhr=07
+imes="01"
+fmes="12"
+idia=01
+fdia=31
 met_file="meteorologia_2011.csv"
 pol_file="contaminantes_2011.csv"
 /

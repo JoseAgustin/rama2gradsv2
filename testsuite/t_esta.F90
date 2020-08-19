@@ -15,7 +15,9 @@ eid=['ACO', 'AJM', 'AJU', 'ATI', 'BJU', 'CAM', 'CCA', 'CHO',&
   'TEC', 'TPN', 'VAL']
     call logs("Testing funtion estacion    ")
     call lee_estaciones_rama
+    do i=1,inst
     write(6,'(6(x,A3,x,I2,x))')&
-     ((eid(i), estacion(eid(i))),i=1,inst)
+     eid(i), estacion(eid(i))
+    end do
     call logs("End Testing         ")
 end program t_est
