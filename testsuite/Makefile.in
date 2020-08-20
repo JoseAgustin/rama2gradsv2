@@ -85,6 +85,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+@GFOR_TRUE@am__append_1 = -DGFOR -fdec
+@GFOR_TRUE@am__append_2 = -fdec
 TESTS = test1$(EXEEXT) test2$(EXEEXT) test3$(EXEEXT) test4$(EXEEXT) \
 	test5$(EXEEXT) test6$(EXEEXT) test7$(EXEEXT) test8$(EXEEXT) \
 	test9$(EXEEXT) test10$(EXEEXT)
@@ -426,7 +428,7 @@ FC = @FC@
 # This file is processed by automake (produces file Makefile.in)
 #
 # Compiler flags -I$(top_srcdir)
-FCFLAGS = -I$(top_srcdir)
+FCFLAGS = -I$(top_srcdir) $(am__append_2)
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -493,6 +495,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AM_CPPFLAGS = -O2 $(am__append_1)
 test1_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_logs.F90
 test2_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_vconv.F90
 test3_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_hyr.F90

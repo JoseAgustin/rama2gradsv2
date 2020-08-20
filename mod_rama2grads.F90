@@ -88,6 +88,7 @@ end subroutine lee_nml
 !  \___/ \__,_|\__| .__/ \__,_|\__|
 !                 |_|
 !
+
 implicit none
 !> Number of data groups following the header.
 integer :: NLEV  = 1;!>If set to 1, then there are surface variables following the header.
@@ -105,8 +106,11 @@ character(len=14) :: out_file,out_filctl
     out_file='simat_'//anio//'.dat'
     out_filctl='simat'//anio//'.ctl'
     call logs('Storing data in dat file '//out_file)
-    open(unit=10,file=out_file,FORM='UNFORMATTED',RECORDTYPE='STREAM'&
-    ,carriagecontrol='none'   , convert="big_endian")
+    open(unit=10,file=out_file,FORM='UNFORMATTED',convert="big_endian" &
+#ifndef GFOR
+        ,RECORDTYPE='STREAM' &
+#endif
+    ,carriagecontrol='NONE')
     tim = 0.0
     do i= hr_ini, hr_end   !Numero horas año
         do j =1, n_rama    ! Stations number
@@ -131,9 +135,11 @@ character(len=14) :: out_file,out_filctl
     open (unit=20,file=out_filctl)
     write(20,'(A)')"DSET ^"//out_file
     write(20,'(A)')"DTYPE station"
-    write(20,'(A)')"OPTIONS big_endian"
-   ! write(20,'(A)')"OPTIONS sequential"
     write(20,'(A)')"STNMAP ^simat"//anio//".map "
+    write(20,'(A)')"OPTIONS big_endian"
+#ifdef GFOR
+    write(20,'(A)')"OPTIONS sequential"
+#endif
     write(20,'(A6,F6.2)')"UNDEF ",rnulo
     write(20,'(A)')"title Meteo y Cont SIMAT ppb "//anio
     write(20,'(A5,I8,A27)')&

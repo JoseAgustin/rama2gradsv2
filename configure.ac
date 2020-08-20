@@ -44,6 +44,9 @@ AC_ARG_ENABLE([parallel],
    else
     FCFLAGS="${FCFLAGS} ";
     fi
+    
+AM_CONDITIONAL([GFOR],[test "x$FC" = "xgfortran"])
+AC_MSG_RESULT([GFOR])
 
 AC_CONFIG_FILES([Makefile 
                  testsuite/Makefile])
@@ -55,6 +58,7 @@ AC_MSG_NOTICE([Configuration complete - $PACKAGE_NAME-$PACKAGE_VERSION $MSG_PARA
 AC_MSG_NOTICE([])
 AS_IF([test "x$NC_VERSION" != "x"],AC_MSG_NOTICE([Using $NC_VERSION]))
 AC_MSG_NOTICE([Fortran compiler:           FC=$FC])
+AC_MSG_NOTICE([gfortran compiler:           GFOR=$GFOR])
 AS_IF([test "$parallel" = "true"],
 AC_MSG_NOTICE([Enable parallel version:    --enable-parallel=yes]),
 AC_MSG_NOTICE([Enable parallel version:    --enable-parallel=no]))

@@ -3,14 +3,18 @@
 #
 ACLOCAL_AMFLAGS = -I autoconf
 
-# The `:;' works around a Bash 3.2 bug when the output is not writeable.
-$(srcdir)/testsuite/package.m4: $(top_srcdir)/configure.ac
+##$(srcdir)/testsuite/package.m4: $(top_srcdir)/configure.ac
+
+AM_CPPFLAGS=-O2
+if GFOR
+AM_CPPFLAGS += -DGFOR -fdec
+endif
 
 bin_PROGRAMS = rama2grads.exe
 
 rama2grads_exe_SOURCES = mod_rama2grads.F90 rama2grads.F90
 
-# Additional files to be cleaned with 'make clean'
+# Additional files to be cleaned with 'make clean' #ifdef #endif
 CLEANFILES = *.o *.mod 
 
 TESTSUITE = $(srcdir)/testsuite

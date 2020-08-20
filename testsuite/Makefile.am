@@ -3,6 +3,11 @@
 #
 # Compiler flags -I$(top_srcdir)
 FCFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS=-O2
+if GFOR
+AM_CPPFLAGS += -DGFOR -fdec
+FCFLAGS += -fdec
+endif
 
 TESTS = test1 test2 test3 test4 test5 test6 test7 test8
 TESTS += test9 test10

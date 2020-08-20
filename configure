@@ -589,6 +589,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+GFOR_FALSE
+GFOR_TRUE
 OPENMP_FCFLAGS
 OBJEXT
 EXEEXT
@@ -3071,6 +3073,17 @@ fi
     FCFLAGS="${FCFLAGS} ";
     fi
 
+ if test "x$FC" = "xgfortran"; then
+  GFOR_TRUE=
+  GFOR_FALSE='#'
+else
+  GFOR_TRUE='#'
+  GFOR_FALSE=
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: GFOR" >&5
+$as_echo "GFOR" >&6; }
+
 ac_config_files="$ac_config_files Makefile testsuite/Makefile"
 
 
@@ -3235,6 +3248,10 @@ else
   am__EXEEXT_FALSE=
 fi
 
+if test -z "${GFOR_TRUE}" && test -z "${GFOR_FALSE}"; then
+  as_fn_error $? "conditional \"GFOR\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0
@@ -4314,6 +4331,8 @@ $as_echo "$as_me: Using $NC_VERSION" >&6;}
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: Fortran compiler:           FC=$FC" >&5
 $as_echo "$as_me: Fortran compiler:           FC=$FC" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: gfortran compiler:           GFOR=$GFOR" >&5
+$as_echo "$as_me: gfortran compiler:           GFOR=$GFOR" >&6;}
 if test "$parallel" = "true"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: Enable parallel version:    --enable-parallel=yes" >&5
 $as_echo "$as_me: Enable parallel version:    --enable-parallel=yes" >&6;}
