@@ -1,16 +1,30 @@
 #
 AT_INIT([rama2grads])
 AT_BANNER(["Testing functions"])
+AT_SETUP([Functions log vconv num2c hourinyr cuenta])
+AT_TESTED([test1 test2 test3 test4 test5])
 
-AT_SETUP([Functions log vconv hourinyr cuenta])
-AT_TESTED([test1 test2 test3 test4])
 AT_CLEANUP
 
-AT_SETUP([Subroutine lee_namelist est leest simat])
-AT_TESTED([ test5 test6 test7 test8])
+AT_SETUP([Subroutine  esta lee_est simat])
+
+AT_TESTED([test6 test7 test8])
 AT_CLEANUP
-AT_SETUP([Subroutine output])
-AT_TESTED([ test9 test10])
+
+AT_SETUP([Subroutine lee_namelist output])
+AT_DATA([[namelist.test]],[[
+&FECHA
+anio="2018"
+imes="01"
+fmes="12"
+idia=01
+fdia=31
+met_file="met_data.csv"
+pol_file="pol_data.csv"
+/
+]])
+AT_CHECK([test9],[0],[stdout],[],[],[echo pasa9])
+AT_TESTED([ test10])
 AT_CLEANUP
 
 
