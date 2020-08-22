@@ -1,22 +1,48 @@
 #
 AT_INIT([rama2grads])
 AT_BANNER(["Testing functions"])
-AT_SETUP([Functions log vconv num2c hourinyr cuenta])
+AT_SETUP([logs vconvert num2char hourinyr estacion])
 AT_TESTED([test1 test2 test3 test4 test5])
 
 AT_CLEANUP
-
-AT_SETUP([Subroutine  esta lee_est simat])
-
-AT_TESTED([test6 test7 test8])
+AT_BANNER(["Testing IO functions and Subroutines"])
+AT_SETUP([cuenta  lee_estaciones_rama lee_simat_data])
+AT_DATA([[est_rama.txt]],[[Alias   Latitud         Longitud        Altitud Estacion (22)
+ACO     19.635501       -98.912003      2198    Acolman
+CAM     19.468404       -99.169794      2233    Camarones
+CHO     19.266948       -98.886088      2253    Chalco
+CUA     19.365313       -99.291705      2704    Cuajimalpa
+FAC     19.482473       -99.243524      2299    FES Acatlqn (Antes ENEP Acatlqn-EAC)
+IMP     19.48872        -99.1193728     2240    Instituto Mexicano del Petroleo
+IZT     19.384413       -99.117641      2238    Iztacalco
+LLA     19.578792       -99.039644      2230    Los Laureles
+LPR     19.534727       -99.11772       2302    La Presa
+MER     19.42461        -99.119594      2245    Merced
+MON     19.460415       -98.902853      2252    Montecillo (Antes Chapingo-CHA)
+NEZ     19.393734       -99.028212      2235    Nezahualcoyotl (Antes Sur-NTS)
+PED     19.325146       -99.204136      2326    Pedregal
+SAG     19.532968       -99.030324      2241    San Agustin
+SJA     19.452592       -99.086095      2258    San Juan de Aragon
+SUR     19.3136886      -99.1170017     2240    Santa Ursula
+TAH     19.246459       -99.010564      2297    Tlahuac
+TLA     19.529077       -99.204597      2311    Tlalneplantla
+TLI     19.602542       -99.177173      2313    Tultitlan
+TPN     19.257041       -99.184177      2522    Tlalpan
+UIZ     19.360794       -99.07388       2221    UAM Iztapalapa
+VIF     19.658223       -99.09659       2242    Villa de las Flores
+XAL     19.525995       -99.0824        2160    Xalostoc
+]])
+AT_CHECK([test6],[0],[stdout],[],[],[echo pasa Cuenta])
+AT_CHECK([test7],[0],[stdout],[],[],[echo pasa Lee_Estaciones])
+AT_TESTED([  test8])
 AT_CLEANUP
 
-AT_SETUP([Subroutine lee_namelist output])
+AT_SETUP([lee_nml output])
 AT_DATA([[namelist.test]],[[
 &FECHA
-anio="2018"
-imes="01"
-fmes="12"
+anio=2018
+imes=01
+fmes=12
 idia=01
 fdia=31
 met_file="met_data.csv"

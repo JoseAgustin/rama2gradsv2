@@ -124,11 +124,11 @@ am_test4_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
 test4_OBJECTS = $(am_test4_OBJECTS)
 test4_LDADD = $(LDADD)
 am_test5_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
-	t_cuenta.$(OBJEXT)
+	t_esta.$(OBJEXT)
 test5_OBJECTS = $(am_test5_OBJECTS)
 test5_LDADD = $(LDADD)
 am_test6_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
-	t_esta.$(OBJEXT)
+	t_cuenta.$(OBJEXT)
 test6_OBJECTS = $(am_test6_OBJECTS)
 test6_LDADD = $(LDADD)
 am_test7_OBJECTS = $(top_builddir)/mod_rama2grads.$(OBJEXT) \
@@ -500,8 +500,8 @@ test1_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_logs.F90
 test2_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_vconv.F90
 test3_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_num2c.F90
 test4_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_hyr.F90
-test5_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_cuenta.F90
-test6_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_esta.F90
+test5_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_esta.F90
+test6_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_cuenta.F90
 test7_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_lee_est.F90
 test8_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_simat.F90
 test9_SOURCES = $(top_builddir)/mod_rama2grads.F90 t_lee_nml.F90
