@@ -24,8 +24,9 @@ cat << End_of_Scr > prueba.gs
 'set gxout shaded'
 'set mpdset estados'
 'set map 15 1 7'
-'d oacres(a.2,t,10,8,6,4,2)'
+'d oacres(a.2,stnmax(t,t=1,t=240),10,8,6,4,2)'
 'd t'
+'draw title Temperatura Maxima 10 dias'
 'cbarn'
 
 End_of_Scr
@@ -47,5 +48,5 @@ a     0 99 var
 ENDVARS
 
 End_dumm
-$GRDS -lc 'prueba.gs'
+$GRDS -pc 'prueba.gs'
 

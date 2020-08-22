@@ -2,8 +2,12 @@
 *.log
 *.exe
 *.o
+*.dat
+*.map
 autom4te.cache
 config.status
 Makefile
 testsuite/Makefile
 testsuite/atconfig
+*ctl
+prueba.gs

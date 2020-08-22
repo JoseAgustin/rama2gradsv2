@@ -5,13 +5,12 @@
 !  Version 1            13 September 2004
 !          2            16 June      2016
 !          2.1          25 May       2020
-!          3.0          16 August    2020
+!          3.0          21 August    2020
 !****************************************************************************
-!  ifort -O2 -axAVX -o rama2gradsv2.exe rama2gradsv2.f90
-!  ifort -O2 -axAVX -o rama2gradsv2.exe -qopenmp rama2gradsv2.F90
-!>  @brief Variables used for the conversion from ascii to GrADS station data file
-!>  @author  Dr. Agustin Garcia Reynoso
-!>  @date  2020,2016,2004
+!  ifort -O2 -axAVX -o rama2gradsv2.exe mod_rama2grads.F90 rama2grads.F90
+!>   @brief Variables used for the conversion from ascii to GrADS station data file
+!>   @author  Dr. Agustin Garcia Reynoso
+!>   @date  2020,2016,2004
 !>   @version  3.0
 !>   @copyright Universidad Nacional Autonoma de Mexico.
 module vp_ramatograds
@@ -88,7 +87,6 @@ end subroutine lee_nml
 !  \___/ \__,_|\__| .__/ \__,_|\__|
 !                 |_|
 !
-
 implicit none
 !> Number of data groups following the header.
 integer :: NLEV  = 1;!>If set to 1, then there are surface variables following the header.
@@ -107,10 +105,7 @@ character(len=14) :: out_file,out_filctl
     out_filctl='simat'//anio//'.ctl'
     call logs('Storing data in dat file '//out_file)
     open(unit=10,file=out_file,FORM='UNFORMATTED',convert="big_endian" &
-#ifndef GFOR
-        ,RECORDTYPE='STREAM' &
-#endif
-    ,carriagecontrol='NONE')
+    ,ACCESS="STREAM", carriagecontrol='NONE')
     tim = 0.0
     do i= hr_ini, hr_end   !Numero horas año
         do j =1, n_rama    ! Stations number
@@ -137,9 +132,6 @@ character(len=14) :: out_file,out_filctl
     write(20,'(A)')"DTYPE station"
     write(20,'(A)')"STNMAP ^simat"//anio//".map "
     write(20,'(A)')"OPTIONS big_endian"
-#ifdef GFOR
-    write(20,'(A)')"OPTIONS sequential"
-#endif
     write(20,'(A6,F6.2)')"UNDEF ",rnulo
     write(20,'(A)')"title Meteo y Cont SIMAT ppb "//anio
     write(20,'(A5,I8,A27)')&
@@ -168,7 +160,7 @@ character(len=14) :: out_file,out_filctl
     if(allocated(msn)) deallocate(msn)
     if(allocated(est_util)) deallocate(est_util)
 end subroutine output
-!> @brief Reads SIMAT database filesand stores values in matrix rama
+!> @brief Reads SIMAT database files and stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 16/08/2020.
 !> @version  3.0
@@ -209,7 +201,7 @@ open (newunit=ifile,file=file_read,status='old',action='read')
     salir=.true.
     do while(salir)
         rval=rnulo
-        read(ifile,*,END=200)fecha,hora,c_id,cvar,rval !meteorologia
+        read(ifile,*,END=200)fecha,hora,c_id,cvar,rval
         ifecha= hourinyr(fecha,hora)
         ist = estacion(c_id)
         ivar = vconvert(cvar)
