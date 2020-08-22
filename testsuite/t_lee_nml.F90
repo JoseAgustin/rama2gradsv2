@@ -2,7 +2,7 @@
 program t_lee_nml
 use vp_ramatograds
 	call logs("Testing subroutine lee_nml")
-	call lee_nml("namelist.nml")
+	call lee_nml("namelist.test")
     print *,anio," ",  imes," ",idia
     print *, "    ",fmes," ", fdia
     print *,met_file,pol_file,hrs_yr

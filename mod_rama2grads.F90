@@ -31,11 +31,11 @@ module vp_ramatograds
     real,allocatable :: rama(:,:,:) ;!> Station identification name
     character(len=3),allocatable,dimension(:) :: id_name
     !> year from input data
-    character(len=4):: anio ;!> start day for output
-    character(len=2):: idia ;!> start month for output
-    character(len=2):: imes;!> end day for output
-    character(len=2):: fdia ;!> end month for output
-    character(len=2):: fmes ;!> SIMAT meteorological data file
+    integer :: anio ;!> start day for output
+    integer :: idia ;!> start month for output
+    integer :: imes;!> end day for output
+    integer :: fdia ;!> end month for output
+    integer :: fmes ;!> SIMAT meteorological data file
     character(len=23):: met_file; !> SIMAT pollution data file
     character(len=23):: pol_file;!>  used stations from est_rama.txt
     logical,allocatable,dimension(:) :: est_util
@@ -71,9 +71,9 @@ subroutine lee_nml(fnml)
             else
             stop '***** No namelist file'
         ENDIF
-    hrs_yr=hourinyr("31-12-"//anio,"23:00")
-    hr_ini=hourinyr(idia//"-"//imes//"-"//anio,"01:00")
-    hr_end=hourinyr(fdia//"-"//fmes//"-"//anio,"24:00")
+    hrs_yr=hourinyr(31,12,anio,"23:00")
+    hr_ini=hourinyr(idia,imes,anio,"01:00")
+    hr_end=hourinyr(fdia,fmes,anio,"24:00")
 end subroutine lee_nml
   !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
   !> @author Agustin Garcia
@@ -96,13 +96,17 @@ real,parameter :: deg2rad= 4*ATAN(1.0)/180.0
 !>The time of this report, in grid-relative units. Typically have the range of - 0.5 to 0.5
 real :: tim;!> value of the parameter to store
 real :: val
+character(len=4) cyear
 character(len=8) stid(n_rama),inicia
 character(len=14) :: out_file,out_filctl
 !
 !     Writing RAMA data bases
 !
-    out_file='simat_'//anio//'.dat'
-    out_filctl='simat'//anio//'.ctl'
+
+    write(cyear,'(I4)')anio
+
+    out_file='simat_'//cyear//'.dat'
+    out_filctl='simat'//cyear//'.ctl'
     call logs('Storing data in dat file '//out_file)
     open(unit=10,file=out_file,FORM='UNFORMATTED',convert="big_endian" &
     ,ACCESS="STREAM", carriagecontrol='NONE')
@@ -126,31 +130,31 @@ character(len=14) :: out_file,out_filctl
     end do ! i
     close(10)
     call logs ('Writing '//out_filctl)
-    write(inicia,'("07z",A2,A3)') idia,num2char(imes)
+    write(inicia,'("07z",I2.2,A3)') idia,num2char(imes)
     open (unit=20,file=out_filctl)
     write(20,'(A)')"DSET ^"//out_file
     write(20,'(A)')"DTYPE station"
-    write(20,'(A)')"STNMAP ^simat"//anio//".map "
+    write(20,'(A)')"STNMAP ^simat"//cyear//".map "
     write(20,'(A)')"OPTIONS big_endian"
     write(20,'(A6,F6.2)')"UNDEF ",rnulo
-    write(20,'(A)')"title Meteo y Cont SIMAT ppb "//anio
-    write(20,'(A5,I8,A27)')&
-    "tdef ",hr_end-hr_ini+1," linear "//inicia//anio//" 1hr"
-    write(20,'(A5,I3)')"vars ",nvars
-    write(20,'(A)')"t   0 99 Temperatura C  "
-    write(20,'(A)')"u   0 99 Viento en x m/s"
-    write(20,'(A)')"v   0 99 Viento en y m/s"
-    write(20,'(A)')"rh  0 99 Humedad relativ"
-    write(20,'(A)')"pb  0 99 Press Bar  Pa"
-    write(20,'(A)')"o3  0 99 ozono  conc ppb"
-    write(20,'(A)')"co  0 99 CO  conc ppm   "
-    write(20,'(A)')"so2 0 99 SO2 conc ppb  "
-    write(20,'(A)')"nox 0 99 NOx conc ppb  "
-    write(20,'(A)')"no  0 99 NO  conc ppb "
-    write(20,'(A)')"no2 0 99 NO2 conc ppb "
-    write(20,'(A)')"pm10 0 99  PM10  ug/m3 "
-    write(20,'(A)')"pm25 0 99  PM2.5 ug/m3 "
-    write(20,'(A)')"pmco 0 99  PMCO ug/m3 "
+    write(20,'(A)')"TITLE Meteorological and pollutants from SIMAT "//cyear
+    write(20,'(A5,I6,A24)')&
+    "TDEF ",hr_end-hr_ini+1," linear "//inicia//cyear//" 1hr"
+    write(20,'(A5,I3)')"VARS ",nvars
+    write(20,'(A)')"t    0 99 Temperature C"
+    write(20,'(A)')"u    0 99 eastward wind component m/s"
+    write(20,'(A)')"v    0 99 orthward wind component. m/s"
+    write(20,'(A)')"rh   0 99 Relative humidity %"
+    write(20,'(A)')"pb   0 99 Pressure Bar  Pa"
+    write(20,'(A)')"o3   0 99 ozone conc ppb"
+    write(20,'(A)')"co   0 99 CO  conc ppm "
+    write(20,'(A)')"so2  0 99 SO2 conc ppb "
+    write(20,'(A)')"nox  0 99 NOx conc ppb "
+    write(20,'(A)')"no   0 99 NO  conc ppb "
+    write(20,'(A)')"no2  0 99 NO2 conc ppb "
+    write(20,'(A)')"pm10 0 99 PM10  ug/m3  "
+    write(20,'(A)')"pm25 0 99 PM2.5 ug/m3  "
+    write(20,'(A)')"pmco 0 99 PMCO organic carbon ug/m3  "
     write(20,'(A)')"endvars"
     if(allocated(rama)) deallocate(rama)
     if(allocated(lat)) deallocate(lat)
@@ -178,6 +182,10 @@ integer :: ist
 integer :: ivar
 integer :: imet
 integer :: ifecha
+integer :: diai
+integer :: mesi
+integer :: anioi
+integer :: io
 logical salir
 !> conversion de mmHg a Pa
 real,parameter :: mmHg2Pa =101325./760.
@@ -187,6 +195,7 @@ character(len=32) :: cdum
 character(len=10) ::fecha
 character(len=5)  :: hora
 character(len=3)  :: c_id,cvar
+character(len=1)  :: sep
 
 if (.not. allocated(rama)) then
     allocate(rama(hrs_yr,n_rama,nvars))
@@ -201,8 +210,12 @@ open (newunit=ifile,file=file_read,status='old',action='read')
     salir=.true.
     do while(salir)
         rval=rnulo
-        read(ifile,*,END=200)fecha,hora,c_id,cvar,rval
-        ifecha= hourinyr(fecha,hora)
+        !read(ifile,*,END=200)fecha,hora,c_id,cvar,rval
+        read(ifile,133,advance='no',IOSTAT=io)diai,sep,mesi,sep,anioi,hora,c_id
+        if (0>io) exit
+        if (io>0) stop 'Problem reading file'
+        read(ifile,*) cvar,rval
+        ifecha= hourinyr(diai,mesi,anioi,hora)
         ist = estacion(c_id)
         ivar = vconvert(cvar)
         if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*mmHg2Pa
@@ -212,13 +225,15 @@ open (newunit=ifile,file=file_read,status='old',action='read')
         rama(ifecha,ist,ivar)=rval
     end do  !salir
 
-200 close(ifile)
+200 continue
+close(ifile)
 n_ramau=0
  do i=1,n_rama
    if(est_util(i)) n_ramau=n_ramau+1
   end do
   write(cdum,'(A27,x,I2)')"Numero de estaciones utiles",n_ramau
 call logs(cdum)
+133 format (I2,A,I2,A,I4,x,A5,x,A3)
 end subroutine lee_simat_data
 !> @author Agustin Garcia
 !> @date 28/08/2012.
@@ -313,55 +328,47 @@ end function
 ! | | | | |_| | | | | | |/ __/ (__| | | | (_| | |
 ! |_| |_|\__,_|_| |_| |_|_____\___|_| |_|\__,_|_|
 character(len=3) function num2char(month)
-    character(len=*),intent(IN):: month
+    integer,intent(IN):: month
     character(len=3),dimension(12)::cmonth
     integer :: im
-    read(month,'(I2)') im
     cmonth=["JAN","FEB","MAR","APR","MAY","JUN",&
             "JUL","AUG","SEP","OCT","NOV","DEC"]
-    num2char=cmonth(im)
+    num2char=cmonth(month)
     return
 end function
 !> @brief  Obtains the number of hours in a year  from date and hour
 !> @author Agustin Garcia
 !> @date 28/08/2012.
-!>   @version  2.2
+!>   @version  3.0
 !  _                      _
 ! | |__   ___  _   _ _ __(_)_ __  _   _ _ __
 ! | '_ \ / _ \| | | | '__| | '_ \| | | | '__|
 ! | | | | (_) | |_| | |  | | | | | |_| | |
 ! |_| |_|\___/ \__,_|_|  |_|_| |_|\__, |_|
 !                                 |___/
-!> @param date DD--MM-YYYY date format
+!> @param date DD-MM-YYYY date format
 !> @param hora Day hour
-integer function hourinyr(date,hora)
+integer function hourinyr(ndia,nmes,nanio,hora)
 implicit none
-character(len=10),intent(in):: date
 character (len=5),intent(in):: hora
-character (len=2) cdia,cmes,chora
-character (len=4) canio
-integer ::i, ih,ndia,nmes,nanio
+character (len=2) chora
+integer,intent(in)::ndia,nmes,nanio
+integer ::i, ih
 integer,dimension(12)::month=[31,28,31,30,31,30,31,31,30,31,30,31]
-        canio= date(7:10)
-        cdia = date(1:2)
-        cmes = date(4:5)
-        chora= hora(1:2)
-        READ (canio, '(I4)') nanio
-        READ (cdia, '(I2)')  ndia
-        READ (cmes, '(I2)')  nmes
-        READ (chora,'(I2)')  ih
-if (mod(nanio,4)==0.and.mod((nanio-1500),400)/=0) month(2)=29
-if (nmes==1) then
-  hourinyr=(ndia-1)*24+ih
-  else
-  hourinyr=0
-  do i=1,nmes-1
-    hourinyr=hourinyr+month(i)*24
-  end do
-  hourinyr=hourinyr+(ndia-1)*24+ih
-end if
-        !print *,nmes,ndia,ih, hourinyr,(ndia-1)*24+ih
-        return
+    chora= hora(1:2)
+    READ (chora,'(I2)')  ih
+    if (mod(nanio,4)==0.and.mod((nanio-1500),400)/=0) month(2)=29
+    if (nmes==1) then
+            hourinyr=(ndia-1)*24+ih
+        else
+            hourinyr=0
+        do i=1,nmes-1
+            hourinyr=hourinyr+month(i)*24
+        end do
+        hourinyr=hourinyr+(ndia-1)*24+ih
+    end if
+    !print *,nmes,ndia,ih, hourinyr,(ndia-1)*24+ih
+return
 end function hourinyr
 !                       _
 !   ___ _   _  ___ _ __ | |_ __ _
