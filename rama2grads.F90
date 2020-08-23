@@ -19,5 +19,6 @@ use vp_ramatograds
     call lee_simat_data(met_file)
     call lee_simat_data(pol_file)
     call output
+    call libera_memoria
     call logs("End Process       ")
 end program

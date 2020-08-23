@@ -105,7 +105,6 @@ allocate(stid(n_rama))
 !
 !     Writing RAMA data bases
 !
-
     write(cyear,'(I4)')anio
 
     out_file='simat_'//cyear//'.dat'
@@ -159,15 +158,23 @@ allocate(stid(n_rama))
     write(20,'(A)')"pm25 0 99 PM2.5 ug/m3  "
     write(20,'(A)')"pmco 0 99 PM Organic Carbon ug/m3"
     write(20,'(A)')"endvars"
-    if(allocated(rama)) deallocate(rama)
-    if(allocated(lat))  deallocate(lat)
-    if(allocated(lon))  deallocate(lon)
-    if(allocated(msn))  deallocate(msn)
     if(allocated(stid)) deallocate(stid)
-    if(allocated(est_util)) deallocate(est_util)
-    if(allocated(id_name))  deallocate(id_name)
-    if(allocated(id_name))  deallocate(id_name)
 end subroutine output
+!> @brief Find if an array has been allocated and release the memory
+!> @author Agustin Garcia
+!> @date 23/08/2020.
+!> @version  3.0
+!> @copyright Universidad Nacional Autonoma de Mexico 2020
+subroutine libera_memoria
+call logs("Libera Memoria      ")
+if(allocated(rama)) deallocate(rama)
+if(allocated(lat))  deallocate(lat)
+if(allocated(lon))  deallocate(lon)
+if(allocated(msn))  deallocate(msn)
+if(allocated(est_util)) deallocate(est_util)
+if(allocated(id_name))  deallocate(id_name)
+if(allocated(id_name))  deallocate(id_name)
+end subroutine libera_memoria
 !> @brief Reads SIMAT database files and stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 16/08/2020.
