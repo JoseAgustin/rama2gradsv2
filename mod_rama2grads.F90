@@ -41,7 +41,7 @@ module vp_ramatograds
     logical,allocatable,dimension(:) :: est_util
 
     NAMELIST /FECHA/ anio, idia, imes, fdia, fmes,met_file,pol_file
-    common /STATIONS/ n_ramau
+    common /STATIONS/ n_rama,n_ramau
 
 contains
 !>  @brief read namelist input file for selecting specific days
@@ -75,10 +75,11 @@ subroutine lee_nml(fnml)
     hr_ini=hourinyr(idia,imes,anio,"01:00")
     hr_end=hourinyr(fdia,fmes,anio,"24:00")
 end subroutine lee_nml
-  !> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
-  !> @author Agustin Garcia
-  !> @date 28/08/2012.
-  !>   @version  3.0
+!> @brief     Creates binary file (simat_2011.dat) and descripting file (simat2011.ctl) for <a href="http://cola.gmu.edu/grads/">GrADS</a>
+!> @author Agustin Garcia
+!> @date 28/08/2012.
+!>   @version  3.0
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
   subroutine output
 !              _               _
 !   ___  _   _| |_ _ __  _   _| |_
@@ -97,8 +98,10 @@ real,parameter :: deg2rad= 4*ATAN(1.0)/180.0
 real :: tim;!> value of the parameter to store
 real :: val
 character(len=4) cyear
-character(len=8) stid(n_rama),inicia
+character(len=8),allocatable::stid(:)
+character(len=8) inicia
 character(len=14) :: out_file,out_filctl
+allocate(stid(n_rama))
 !
 !     Writing RAMA data bases
 !
@@ -154,20 +157,22 @@ character(len=14) :: out_file,out_filctl
     write(20,'(A)')"no2  0 99 NO2 conc ppb "
     write(20,'(A)')"pm10 0 99 PM10  ug/m3  "
     write(20,'(A)')"pm25 0 99 PM2.5 ug/m3  "
-    write(20,'(A)')"pmco 0 99 PMCO organic carbon ug/m3  "
+    write(20,'(A)')"pmco 0 99 PM Organic Carbon ug/m3"
     write(20,'(A)')"endvars"
     if(allocated(rama)) deallocate(rama)
-    if(allocated(lat)) deallocate(lat)
-    if(allocated(lon)) deallocate(lon)
-    if(allocated(id_name)) deallocate(id_name)
-    if(allocated(id_name)) deallocate(id_name)
-    if(allocated(msn)) deallocate(msn)
+    if(allocated(lat))  deallocate(lat)
+    if(allocated(lon))  deallocate(lon)
+    if(allocated(msn))  deallocate(msn)
+    if(allocated(stid)) deallocate(stid)
     if(allocated(est_util)) deallocate(est_util)
+    if(allocated(id_name))  deallocate(id_name)
+    if(allocated(id_name))  deallocate(id_name)
 end subroutine output
 !> @brief Reads SIMAT database files and stores values in matrix rama
 !> @author Agustin Garcia
 !> @date 16/08/2020.
 !> @version  3.0
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
 !> @param file_read datafile from SIMAT to be read
 !  _                   _                 _          _       _
 ! | | ___  ___     ___(_)_ __ ___   __ _| |_     __| | __ _| |_ __ _
@@ -196,12 +201,11 @@ character(len=10) ::fecha
 character(len=5)  :: hora
 character(len=3)  :: c_id,cvar
 character(len=1)  :: sep
-
-if (.not. allocated(rama)) then
-    allocate(rama(hrs_yr,n_rama,nvars))
-    rama=rnulo
-end if
-open (newunit=ifile,file=file_read,status='old',action='read')
+    if (.not. allocated(rama)) then
+        allocate(rama(hrs_yr,n_rama,nvars))
+        rama=rnulo
+    end if
+    open (newunit=ifile,file=file_read,status='old',action='read')
 !reading headings
     do i=1,11
         read(ifile,*) cdum
@@ -210,30 +214,30 @@ open (newunit=ifile,file=file_read,status='old',action='read')
     salir=.true.
     do while(salir)
         rval=rnulo
-        !read(ifile,*,END=200)fecha,hora,c_id,cvar,rval
         read(ifile,133,advance='no',IOSTAT=io)diai,sep,mesi,sep,anioi,hora,c_id
         if (0>io) exit
         if (io>0) stop 'Problem reading file'
-        read(ifile,*) cvar,rval
+        read(ifile,*,IOSTAT=io) cvar,rval
+        if (0>io) exit
+        if (io>0) stop 'Problem reading file'
         ifecha= hourinyr(diai,mesi,anioi,hora)
         ist = estacion(c_id)
         ivar = vconvert(cvar)
         if(rval.ne.rnulo.and.ivar.eq.5 ) rval=rval*mmHg2Pa
         if(rval.eq.0 .and. ivar.eq.2) rval=rnulo
         if(rval.eq.0 .and. ivar.eq.3.and.rama(ifecha,ist,2).eq.rnulo) rval=rnulo
-        !print *,ifecha,ist,ivar,rval
         rama(ifecha,ist,ivar)=rval
     end do  !salir
 
 200 continue
-close(ifile)
-n_ramau=0
- do i=1,n_rama
-   if(est_util(i)) n_ramau=n_ramau+1
-  end do
-  write(cdum,'(A27,x,I2)')"Numero de estaciones utiles",n_ramau
-call logs(cdum)
-133 format (I2,A,I2,A,I4,x,A5,x,A3)
+    close(ifile)
+    n_ramau=0
+    do i=1,n_rama
+        if(est_util(i)) n_ramau=n_ramau+1
+    end do
+    write(cdum,'(A27,x,I2)')"Numero de estaciones utiles",n_ramau
+    call logs(cdum)
+133 format (I2,A,I2,A,I4,x,A5,x,A3,x,A)
 end subroutine lee_simat_data
 !> @author Agustin Garcia
 !> @date 28/08/2012.
@@ -268,11 +272,11 @@ end subroutine lee_simat_data
     est_util=.false.
     close(iunit)
 end subroutine lee_estaciones_rama
-!> @brief     Identify the statios in the data set
-!> @author Agustin Garcia
-!> @date 28/08/2012.
+!>   @brief Identify the statios in the data set
+!>   @author Agustin Garcia
+!>   @date 28/08/2012.
 !>   @version  3.0
-!>
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
 ! Identifies the station number id
 !            _             _
 !   ___  ___| |_ __ _  ___(_) ___  _ __
@@ -292,10 +296,11 @@ do i=1,n_rama
 end do
 return
 end function
-!> @brief Set ID number to the variable name
-!> @author Agustin Garcia
-!> @date 28/08/2012.
+!>   @brief Set ID number to the variable name
+!>   @author Agustin Garcia
+!>   @date 28/08/2012.
 !>   @version  3.0
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
 !> @param cvar name of the variable to convert
 integer function vconvert(cvar)
 !                                    _
@@ -317,10 +322,11 @@ integer function vconvert(cvar)
     vconvert=-99
     return
 end function
-!> @brief converts number mont to name
-!> @author Agustin Garcia
-!> @date 28/08/2012.
+!>   @brief converts  month numbert to its name
+!>   @author Agustin Garcia
+!>   @date 28/08/2012.
 !>   @version  3.0
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
 !> @param month number to convert
 !                        ____      _
 !  _ __  _   _ _ __ ___ |___ \ ___| |__   __ _ _ __
@@ -336,17 +342,20 @@ character(len=3) function num2char(month)
     num2char=cmonth(month)
     return
 end function
-!> @brief  Obtains the number of hours in a year  from date and hour
-!> @author Agustin Garcia
-!> @date 28/08/2012.
+!>   @brief  Obtains the number of hours in a year from day, month, year and hour
+!>   @author Agustin Garcia
+!>   @date 28/08/2012.
 !>   @version  3.0
+!>   @copyright Universidad Nacional Autonoma de Mexico 2020
 !  _                      _
 ! | |__   ___  _   _ _ __(_)_ __  _   _ _ __
 ! | '_ \ / _ \| | | | '__| | '_ \| | | | '__|
 ! | | | | (_) | |_| | |  | | | | | |_| | |
 ! |_| |_|\___/ \__,_|_|  |_|_| |_|\__, |_|
 !                                 |___/
-!> @param date DD-MM-YYYY date format
+!> @param ndia day for evaluation
+!> @param nmes month for evaluation
+!> @param nanio year for evaluation
 !> @param hora Day hour
 integer function hourinyr(ndia,nmes,nanio,hora)
 implicit none
@@ -375,7 +384,7 @@ end function hourinyr
 !  / __| | | |/ _ \ '_ \| __/ _` |
 ! | (__| |_| |  __/ | | | || (_| |
 !  \___|\__,_|\___|_| |_|\__\__,_|
-!>  @brief count the number of rowns in a file
+!>   @brief count the number of rowns in a file
 !>   @author  Jose Agustin Garcia Reynoso
 !>   @date  07/13/2020
 !>   @version  2.2
@@ -400,7 +409,7 @@ end
 ! | | (_) | (_| \__ \
 ! |_|\___/ \__, |___/
 !          |___/
-!>  @brief display log during different program stages
+!>   @brief display log during different program stages
 !>   @author  Jose Agustin Garcia Reynoso
 !>   @date  08/08/2020
 !>   @version  2.2

@@ -1,11 +1,11 @@
 #
 AT_INIT([rama2grads])
-AT_BANNER(["Testing functions"])
+AT_BANNER(["Testing internal functions *****"])
 AT_SETUP([logs vconvert num2char hourinyr estacion])
 AT_TESTED([test1 test2 test3 test4 test5])
 
 AT_CLEANUP
-AT_BANNER(["Testing IO functions and Subroutines"])
+AT_BANNER(["Testing IO functions and subroutines  **"])
 AT_SETUP([cuenta  lee_estaciones_rama lee_simat_data])
 AT_DATA([[est_rama.txt]],[[Alias   Latitud         Longitud        Altitud Estacion (22)
 ACO     19.635501       -98.912003      2198    Acolman
