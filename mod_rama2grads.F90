@@ -226,7 +226,7 @@ character(len=1)  :: sep
         if (io>0) stop 'Problem reading file'
         read(ifile,*,IOSTAT=io) cvar,rval
         if (0>io) exit
-        if (io>0) stop 'Problem reading file'
+        if (io>0) stop 'Problem reading file 2'
         ifecha= hourinyr(diai,mesi,anioi,hora)
         ist = estacion(c_id)
         ivar = vconvert(cvar)
@@ -320,6 +320,7 @@ integer function vconvert(cvar)
     character(len=3),dimension(nvars):: parametro
     parametro=["TMP","WSP","WDR","RH ","PBa","O3 ","CO ",&
                "SO2","NOX","NO ","NO2","PM1","PM2","PMC"]
+
     do i=1,size(parametro)
         if(trim(cvar).eq.trim(parametro(i))) then
             vconvert=i
@@ -418,14 +419,18 @@ end
 !          |___/
 !>   @brief display log during different program stages
 !>   @author  Jose Agustin Garcia Reynoso
-!>   @date  08/08/2020
-!>   @version  2.2
+!>   @date  25/08/2020
+!>   @version  2.3
 !>   @copyright Universidad Nacional Autonoma de Mexico 2020
 !>   @param texto text to be displayed
 subroutine logs(texto)
     implicit none
     character(len=*),intent(in):: texto
-    write(6,333) texto
-333 format(3x,5("*"),x,A35,x,"******")
+    character(len=50):: FMT
+    integer :: lef
+    lef=(40-len(trim(texto)))/2
+    if(lef.lt.1) lef=1
+    write(FMT,"('(3x,7(''*''),',I0,'x,A,',I0,'X,7(''*''))')") lef,lef
+    write(6,FMT) trim(texto)
 end subroutine
 end module vp_ramatograds
