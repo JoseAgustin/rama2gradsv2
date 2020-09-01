@@ -59,6 +59,7 @@ AC_MSG_NOTICE([])
 AS_IF([test "x$NC_VERSION" != "x"],AC_MSG_NOTICE([Using $NC_VERSION]))
 AC_MSG_NOTICE([Fortran compiler:           FC=$FC])
 AC_MSG_NOTICE([gfortran compiler:           GFOR=$GFOR])
+#
 AS_IF([test "$parallel" = "true"],
 AC_MSG_NOTICE([Enable parallel version:    --enable-parallel=yes]),
 AC_MSG_NOTICE([Enable parallel version:    --enable-parallel=no]))
@@ -66,4 +67,5 @@ AC_MSG_NOTICE([Fortran flags:              FCFLAGS=$FCFLAGS])
 AC_MSG_NOTICE([Install prefix:             --prefix=$prefix])
 AC_MSG_NOTICE([Executables install prefix: --exec_prefix=$exec_prefix])
 AC_MSG_NOTICE([Binary directory:           --bindir=$bindir])
+AC_MSG_NOTICE([---------------------------------------------------------])
 

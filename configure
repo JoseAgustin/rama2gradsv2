@@ -4333,6 +4333,7 @@ fi
 $as_echo "$as_me: Fortran compiler:           FC=$FC" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: gfortran compiler:           GFOR=$GFOR" >&5
 $as_echo "$as_me: gfortran compiler:           GFOR=$GFOR" >&6;}
+#
 if test "$parallel" = "true"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: Enable parallel version:    --enable-parallel=yes" >&5
 $as_echo "$as_me: Enable parallel version:    --enable-parallel=yes" >&6;}
@@ -4348,4 +4349,6 @@ $as_echo "$as_me: Install prefix:             --prefix=$prefix" >&6;}
 $as_echo "$as_me: Executables install prefix: --exec_prefix=$exec_prefix" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: Binary directory:           --bindir=$bindir" >&5
 $as_echo "$as_me: Binary directory:           --bindir=$bindir" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: ---------------------------------------------------------" >&5
+$as_echo "$as_me: ---------------------------------------------------------" >&6;}
 
