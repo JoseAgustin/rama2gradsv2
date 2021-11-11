@@ -108,7 +108,7 @@ allocate(stid(n_rama))
     write(cyear,'(I4)')anio
 
     out_file='simat_'//cyear//'.dat'
-    out_filctl='simat'//cyear//'.ctl'
+    out_filctl='simat_'//cyear//'.ctl'
     call logs('Storing data in dat file '//out_file)
     open(unit=10,file=out_file,FORM='UNFORMATTED',convert="big_endian" &
     ,ACCESS="STREAM", carriagecontrol='NONE')
@@ -133,13 +133,13 @@ allocate(stid(n_rama))
     close(10)
     call logs ('Writing '//out_filctl)
     write(inicia,'("07z",I2.2,A3)') idia,num2char(imes)
-    open (unit=20,file=out_filctl)
-    write(20,'(A)')"DSET ^"//out_file
-    write(20,'(A)')"DTYPE station"
-    write(20,'(A)')"STNMAP ^simat"//cyear//".map "
-    write(20,'(A)')"OPTIONS big_endian"
+    open (unit=20,file=out_filctl,FORM='FORMATTED')
+    write(20,'(20A)')"DSET ^"//out_file
+    write(20,'(13A)')"DTYPE station"
+    write(20,'(20A)')"STNMAP ^simat"//cyear//".map "
+    write(20,'(18A)')"OPTIONS big_endian"
     write(20,'(A6,F6.2)')"UNDEF ",rnulo
-    write(20,'(A)')"TITLE Meteorological and pollutants from SIMAT "//cyear
+    write(20,'(51A)')"TITLE Meteorological and pollutants from SIMAT "//cyear
     write(20,'(A5,I6,A24)')&
     "TDEF ",hr_end-hr_ini+1," linear "//inicia//cyear//" 1hr"
     write(20,'(A5,I3)')"VARS ",nvars
@@ -158,6 +158,7 @@ allocate(stid(n_rama))
     write(20,'(A)')"pm25 0 99 PM2.5 ug/m3  "
     write(20,'(A)')"pmco 0 99 PM Organic Carbon ug/m3"
     write(20,'(A)')"endvars"
+    close(20)
     if(allocated(stid)) deallocate(stid)
 end subroutine output
 !> @brief Find if an array has been allocated and release the memory

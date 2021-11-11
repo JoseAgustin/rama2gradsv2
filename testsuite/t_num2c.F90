@@ -9,6 +9,6 @@ character(len=32)::arg
        if(arg .eq."--version") print *,"Version 3.0"
     end do
 	do i=1,12
-	write(6,'(1(A3,x))',advance='no') (num2char(i))
+	write(6,'(A3,x)',advance='no') num2char(i)
 	end do
 end program
