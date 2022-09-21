@@ -46,7 +46,7 @@ the est_rama.txt stations file has one header with the following format:
     HGM   19.411617   -99.152207  2234    Hospital General de M<8E>xico
 
 ### output
-The are generated two files one with the binary data file and the descriptor file (ctl)  
+Thhe code generated two files one with the binary data file and the descriptor file (ctl)  
 
 ![TMP stations](/assets/images/ftemp.png "Temperature max 10 days  stations")
 
